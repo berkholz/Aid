@@ -1,1 +1,26 @@
-# Aid
+# Aid (Automated internet downloader)
+
+Tool written in python to download automated the actual version of specified software packages.
+
+Siftware packages can be download by creating a module which generates a JSON answer in recommended format.
+
+Aid has four components:
+- Crawler
+- Database
+- Downloader
+- Packager
+
+## Crawler
+The Crawler component crawls the websites an returns a JSON formatted answer with all package informations.
+
+## Database
+The Database component stores the information of the Crawler in a SQLite database.
+
+## Downloader
+THe Downloader component uses the SQLite database to retrieve the URLS that it downloads.
+
+## Packager
+The Packager component creates a signed package with all selected downloaded software downloads.
+
+## Manager
+This component manages all components. Here you can select the packages to download or select the software for package creation.
