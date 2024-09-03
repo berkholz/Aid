@@ -4,11 +4,12 @@ Tool written in python to download automated the actual version of specified sof
 
 Siftware packages can be download by creating a module which generates a JSON answer in recommended format.
 
-Aid has four components:
+Aid has the following components:
 - Crawler
 - Database
 - Downloader
 - Packager
+- Manager
 
 ## Crawler
 The Crawler component crawls the websites an returns a JSON formatted answer with all package informations.
