@@ -32,7 +32,13 @@ def append_software(list_software_dict):
             connection = sqlite3.connect(sqlite_db_file)
             cursor = connection.cursor()
             #print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
-            # TODO: check if record allready exists in db and skip it with an log messages
+            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?", (app_name,download['app_platform']))
+            entry = cursor.fetchone()
+            if entry:
+                version = entry[0]
+                if version == app_version:
+                    print(f"App {app_name} in version {app_version} already exists.")
+                    continue
             cursor.execute("INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, url_sha256, url_asc, last_found, last_download) VALUES (?,?,?,?,?,?,?,?)", (app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download ))
 
             # SQLs = "INSERT INTO " + sqlite_table_name + " VALUES (" + app_name + "," + app_version + "," + download['platform']+ "," + download['url_bin'] + a")"
