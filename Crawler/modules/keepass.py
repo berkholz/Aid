@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
+from Crawler import sourceforge_direct_url_helper
+from Crawler.sourceforge_direct_url_helper import get_direct_url
 
 download_url = 'https://keepass.info/download.html'
 app_name = "keepass".lower()
@@ -18,7 +20,7 @@ def isBinaryURL(ref, platform_string):
 
 def getWebSite(url):
     # creating request with custom user agent string
-    response = requests.get(url,allow_redirects=False).text
+    response = requests.get(url).text
     return BeautifulSoup(response, 'html.parser')
 
 
@@ -47,12 +49,7 @@ def run():
         if isBinaryURL(a, '.exe'):
             tmp_url_bin = findPlatformInURL('.exe', a['href'])
             app_version = tmp_url_bin.split('-')[1]
-
-            downl_site = getWebSite(tmp_url_bin)
-
-            link = downl_site.find('a',href=True)['href']
-
-
+            link = get_direct_url(tmp_url_bin)
             downloads.append({"app_platform": "win64", "url_bin": link, "url_asc":None, "url_sha256": None})
 
     return toJSON(downloads)
