@@ -62,13 +62,20 @@ def run():
         display_name = display_name.replace(" ", "+")
 
         url_response = call_api(api_link_url.format(name=display_name, os=os, country=country, lang=lang))
-        print(url_response)
+        # print(url_response)
 
 
         tmp_url = url_response['downloadURL']
-        if tmp_url.find('.exe'):
-            print(tmp_url)
+        # print(tmp_url)
+        # print(app_version)
+        if (tmp_url.find('.exe')>=0):
+            # print(tmp_url)
             downloads.append({"app_platform": "win64", "url_bin": tmp_url, "url_asc": None,
+                              "url_sha256": None})
+
+        if (tmp_url.find('.apk')>=0):
+            # print(tmp_url)
+            downloads.append({"app_platform": "android", "url_bin": tmp_url, "url_asc": None,
                               "url_sha256": None})
 
     return toJSON(downloads)
