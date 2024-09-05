@@ -39,6 +39,7 @@ def append_software(list_software_dict):
                 if version == app_version:
                     print(f"App {app_name} in version {app_version} already exists.")
                     continue
+            print(f"Inserting App {app_name} in version {app_version}.")
             cursor.execute("INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, url_sha256, url_asc, last_found, last_download) VALUES (?,?,?,?,?,?,?,?)", (app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download ))
 
             # SQLs = "INSERT INTO " + sqlite_table_name + " VALUES (" + app_name + "," + app_version + "," + download['platform']+ "," + download['url_bin'] + a")"

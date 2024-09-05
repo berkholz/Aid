@@ -19,6 +19,7 @@ def getApplications(relative_path=''):
 
     # iterate over all modules
     for mymodule in __all__:
+        print("checking {module} for downloads.".format(module=mymodule))
         # import module
         if __name__ == '__main__':
             # we call the crawler.py directly, so we import without the __package__
