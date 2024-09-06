@@ -39,6 +39,8 @@ def download_sw(software,platform,path):
     print(f"Starting download of {software}, version {version}...")
     load = requests.get(link,timeout=300)
 
+    if '/' in version:
+        version = '_'.join(version.split('/'))
     sv_path = path+"/"+software+"-"+version+"."+extension
     if load.status_code == 200:
         with open(sv_path, 'wb') as file:
@@ -67,4 +69,20 @@ def download(sw_list,platform):
 
 
 if __name__ == '__main__':
-    download(['inkscape'],'win64')
+    softwares = [
+        '7zip',
+        'adobe_enterprise',
+        'firefox_esr',
+        'inkscape',
+        'keepass',
+        'notepad++',
+        'putty',
+        'sqlite_browser',
+        'stunnel',
+        'winscp',
+        'gimp',
+        'sqldeveloper',
+        'sysinternal_utilities'
+    ]
+
+    download(softwares,'win64')
