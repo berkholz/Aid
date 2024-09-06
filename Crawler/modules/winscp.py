@@ -52,7 +52,7 @@ def run():
     tmp_url_asc = ''
     tmp_url_sha256 = ''
     for a in links:
-        if isBinaryURL(a, '.exe') and a.text.find("CDN") >= 0:
+        if isBinaryURL(a, '.exe') and a.text.find("Direct") >= 0:
             tmp_url_bin = findPlatformInURL('.exe', a['href'])
             app_version = tmp_url_bin.split('-')[1]
             downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
