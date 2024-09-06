@@ -2,7 +2,7 @@ import os.path
 import sqlite3
 
 ### CONFIGURATION
-cwd_dir = os.path.dirname(os.getcwd())
+cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # print(cwd_dir)
 sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
 # print(sqlite_db_file)

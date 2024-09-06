@@ -8,7 +8,7 @@ import requests
 
 import Db.database as db
 
-cwd_dir = os.path.dirname(os.getcwd())
+cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
 def path_init():
     """initializes the download-folder"""
@@ -37,7 +37,7 @@ def download_sw(software,platform,path):
     extension = link.split('?')[0].split('.')[-1]
 
     print(f"Starting download of {software}, version {version}...")
-    load = requests.get(link)
+    load = requests.get(link,timeout=300)
 
     sv_path = path+"/"+software+"-"+version+"."+extension
     if load.status_code == 200:
@@ -48,7 +48,7 @@ def download_sw(software,platform,path):
         print(f'Failed to download {software}.')
 
 
-def download(list,platform):
+def download(sw_list,platform):
     """downloads list of software"""
     date_str = datetime.datetime.now().strftime('%d_%m_%Y')
     if not os.path.exists(DOWNLOAD_PATH+date_str):
@@ -61,10 +61,10 @@ def download(list,platform):
     path= DOWNLOAD_PATH+date_str+'/'+platform+index_str
     os.makedirs(path)
 
-    for f in list:
+    for f in sw_list:
         download_sw(f,platform,path)
 
 
 
 if __name__ == '__main__':
-    download(['7zip','stunnel','sqlite_browser','sqldeveloper'],'win64')
+    download(['inkscape'],'win64')
