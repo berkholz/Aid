@@ -49,7 +49,7 @@ def run():
     downloads = list()
     website = getWebSite(download_url)
     iter = 0
-    while (website is None or website.find('li', class_='download').find('a') is None) and iter <= MAX_ITER:
+    while (website is None or website.find('li', class_='download') is None) and iter <= MAX_ITER:
         website = getWebSite(download_url)
     link_tar = website.find('li', class_='download').find('a')['href']
     # print(link_tar)
