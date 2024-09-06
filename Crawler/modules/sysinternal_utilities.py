@@ -46,7 +46,7 @@ def run():
     app_version = website.find('time').text
 
     if isBinaryURL(complete, '.zip'):
-        tmp_url_bin = base_url + findPlatformInURL('.zip', complete)
+        tmp_url_bin = findPlatformInURL('.zip', complete)
 
         downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
                           "url_sha256": None})
