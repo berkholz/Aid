@@ -1,8 +1,13 @@
+import os.path
 import sqlite3
 
 ### CONFIGURATION
-sqlite_db_file = "aid.db"
+cwd_dir = os.path.dirname(os.getcwd())
+# print(cwd_dir)
+sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
+# print(sqlite_db_file)
 sqlite_table_name = "software"
+
 
 def init_db():
     connection = sqlite3.connect(sqlite_db_file)
@@ -22,6 +27,7 @@ def init_db():
                    """)
     connection.commit()
 
+
 def append_software(list_software_dict):
     for software in list_software_dict:
         app_name = software['app_name']
@@ -31,8 +37,9 @@ def append_software(list_software_dict):
         for download in software['downloads']:
             connection = sqlite3.connect(sqlite_db_file)
             cursor = connection.cursor()
-            #print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
-            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?", (app_name,download['app_platform']))
+            # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
+            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?",
+                           (app_name, download['app_platform']))
             entry = cursor.fetchone()
             if entry:
                 version = entry[0]
@@ -40,23 +47,43 @@ def append_software(list_software_dict):
                     print(f"App {app_name} in version {app_version} already exists.")
                     continue
             print(f"Inserting App {app_name} in version {app_version}.")
-            cursor.execute("INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, url_sha256, url_asc, last_found, last_download) VALUES (?,?,?,?,?,?,?,?)", (app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download ))
+            cursor.execute(
+                "INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, url_sha256, url_asc, last_found, last_download) VALUES (?,?,?,?,?,?,?,?)",
+                (app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'],
+                 download['url_asc'], last_found, last_download))
 
             # SQLs = "INSERT INTO " + sqlite_table_name + " VALUES (" + app_name + "," + app_version + "," + download['platform']+ "," + download['url_bin'] + a")"
             # print(SQLs)
             # cursor.execute(SQLs)
             connection.commit()
 
+
+def get_software_links(app_name, platform):
+    connection = sqlite3.connect(sqlite_db_file)
+    cursor = connection.cursor()
+    cursor.execute(
+        f"SELECT url_bin , app_version FROM {sqlite_table_name} WHERE app_name=\"{app_name}\" AND app_platform=\"{platform}\"")
+    entries = cursor.fetchall()
+    print(entries)
+    ret_dict = {}
+    for entry in entries:
+        ret_dict[entry[1]] = entry[0]
+
+    return ret_dict
+
+
 def insert_dummy_data():
     connection = sqlite3.connect(sqlite_db_file)
+    print(sqlite_db_file)
     cursor = connection.cursor()
     SQLs = "INSERT INTO " + sqlite_table_name + " VALUES ('stunnel','5.4','linux','https://www.stunnel.org/download.html','','','','')"
     print(SQLs)
     cursor.execute(SQLs)
     connection.commit()
 
+
 if __name__ == "__main__":
-    sqlite_db_file = "../" + sqlite_db_file
+    sqlite_db_file = sqlite_db_file
     print(sqlite_db_file)
     init_db()
-    #insert_dummy_data()
+    # insert_dummy_data()
