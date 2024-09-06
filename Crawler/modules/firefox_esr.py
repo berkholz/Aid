@@ -70,7 +70,7 @@ def run():
     # print(tables)
     app_version = find_newest_esr(tables)
 
-    version_url = base_url + app_version + '/'
+    version_url = download_url + app_version + '/'
     url_asc = version_url + 'SHA256SUMS.asc'
     url_sha256 = version_url + 'SHA256SUMS'
 
