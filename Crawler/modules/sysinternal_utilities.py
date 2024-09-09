@@ -48,8 +48,8 @@ def run():
     if isBinaryURL(complete, '.zip'):
         tmp_url_bin = findPlatformInURL('.zip', complete)
 
-        downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
-                          "url_sha256": None})
+        downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin,"sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
     return toJSON(downloads)
 
