@@ -55,8 +55,8 @@ def run():
         if isBinaryURL(a, '.exe') and a.text.find("Direct") >= 0:
             tmp_url_bin = findPlatformInURL('.exe', a['href'])
             app_version = tmp_url_bin.split('-')[1]
-            downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
-                              "url_sha256": None})
+            downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin,"sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
     return toJSON(downloads)
 

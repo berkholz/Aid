@@ -40,33 +40,30 @@ def run():
     downloads = list()
     website = getWebSite()
     # print (website)
-    win = website.find(id = 'win')
+    win = website.find(id='win')
     global app_version
     # print(newest_table)
-    win_link = win.find('a',id="win-download-link",href=True)['href']
+    win_link = win.find('a', id="win-download-link", href=True)['href']
     win_sha256 = win.find('kbd').text
     # print (win_link," ",win_sha256)
-
 
     if isBinaryURL(win_link, '.exe'):
         tmp_url_bin = ('https:' + win_link)
         # print(tmp_url_bin)
         app_version = tmp_url_bin.split('/')[4]
-        downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
-                          "url_sha256": win_sha256})
+        downloads.append(
+            {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": 'string',
+             "hash_res": win_sha256, "url_pub_key": None})
 
-
-    lin = website.find(id = 'linux')
-    lin_link = lin.find('a',href=True)['href']
+    lin = website.find(id='linux')
+    lin_link = lin.find('a', href=True)['href']
     # print(lin_link)
-
-
 
     if isBinaryURL(lin_link, '.flatpakref'):
         # we have to find tar.gz, because it is a generic linux tar.gz package
         tmp_url_bin = findPlatformInURL('.flatpakref', lin_link)
-        downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "url_asc": None,
-                          "url_sha256": None})
+        downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
         # print(url_base + a['href'])
     return toJSON(downloads)
 

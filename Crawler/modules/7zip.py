@@ -52,14 +52,16 @@ def run():
         if isBinaryURL(a, 'x64.exe'):
             tmp_url_bin = base_url + findPlatformInURL('x64.exe', a['href'])
             app_version = tmp_url_bin.split('/')[-1].split('-')[0][2:]
-            downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": None,
-                              "url_sha256": None})
+            downloads.append(
+                {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
         elif isBinaryURL(a, 'linux-x64.tar.xz'):
             # we have to find tar.gz, because it is a generic linux tar.gz package
             tmp_url_bin = base_url + findPlatformInURL('linux-x64.tar.xz', a['href'])
-            downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "url_asc": None,
-                              "url_sha256": None})
+            downloads.append(
+                {"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
             # print(url_base + a['href'])
     return toJSON(downloads)
 

@@ -57,14 +57,16 @@ def run():
             elif isBinaryURL(a, '64bit'):
                 tmp_url_bin = findPlatformInURL('64bit', a['href'])
                 app_version = tmp_url_bin.split('-')[2]
-                downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": tmp_url_bin + ".gpg",
-                                  "url_sha256": None})
+                downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": 'gpg_file',
+                                  "sig_res": tmp_url_bin + '.gpg', "hash_type": None, "hash_res": None,
+                                  "url_pub_key": None})
 
             elif isBinaryURL(a, 'tar.gz'):
                 # we have to find tar.gz, because it is a generic linux tar.gz package
                 tmp_url_bin = base_url + findPlatformInURL('tar.gz', a['href'])
-                downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "url_asc": tmp_url_bin + ".gpg",
-                                  "url_sha256": None})
+                downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": 'gpg_file',
+                                  "sig_res": tmp_url_bin + '.gpg', "hash_type": None, "hash_res": None,
+                                  "url_pub_key": None})
                 # print(url_base + a['href'])
     return toJSON(downloads)
 

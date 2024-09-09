@@ -73,16 +73,17 @@ def run():
     version_url = download_url + app_version + '/'
     url_asc = version_url + 'SHA256SUMS.asc'
     url_sha256 = version_url + 'SHA256SUMS'
+    url_key = version_url + 'KEY'
 
     # win64
     tmp_url_bin = version_url + f'win64/{lang}/Firefox Setup {app_version}.exe'
-    downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": url_asc,
-                      "url_sha256": url_sha256})
+    downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin,"sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi",
+                 "hash_res": url_sha256, "url_pub_key": url_key })
 
     # linux x86_64
     tmp_url_bin = version_url + f'win64/{lang}/firefox-{app_version}.tar.bz2'
-    downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "url_asc": tmp_url_bin + ".asc",
-                      "url_sha256": url_sha256})
+    downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": 'asc_file', "sig_res": tmp_url_bin + ".asc", "hash_type": "sha256_multi",
+                 "hash_res": url_sha256, "url_pub_key": url_key})
 
     return toJSON(downloads)
 

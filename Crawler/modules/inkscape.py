@@ -62,13 +62,15 @@ def run():
         tmp_url_bin = base_url + findPlatformInURL('/windows/64-bit/msi/', link_win)
         # print(tmp_url_bin)
         app_version = tmp_url_bin.split('/')[4].split('-')[1]
-        file, sig = direct(tmp_url_bin)
-        downloads.append({"app_platform": "win64", "url_bin": file, "url_asc": None, "url_sha256": sig})
+        file, sha = direct(tmp_url_bin)
+        downloads.append({"app_platform": "win64", "url_bin": file,"sig_type": None, "sig_res": None, "hash_type": 'sha256_single',
+                 "hash_res": sha, "url_pub_key": None})
 
     if isBinaryURL(link_tar, '/source/archive/xz'):
         tmp_url_bin = base_url + findPlatformInURL('/source/archive/xz', link_tar)
         file, sig = direct(tmp_url_bin)
-        downloads.append({"app_platform": "linux", "url_bin": file, "url_asc": sig, "url_sha256": None})
+        downloads.append({"app_platform": "linux", "url_bin": file,"sig_type": 'sig_file', "sig_res": sig, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
 
     return toJSON(downloads)

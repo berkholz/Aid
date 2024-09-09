@@ -1,10 +1,9 @@
 import datetime
 import os
 import re
-from copyreg import dispatch_table
-from urllib.request import urlretrieve
 
 import requests
+from tqdm import tqdm
 
 import Db.database as db
 
@@ -36,18 +35,27 @@ def download_sw(software,platform,path):
     link,version = get_newest_link(software,platform)
     extension = link.split('?')[0].split('.')[-1]
 
-    print(f"Starting download of {software}, version {version}...")
-    load = requests.get(link,timeout=300)
-
     if '/' in version:
         version = '_'.join(version.split('/'))
     sv_path = path+"/"+software+"-"+version+"."+extension
-    if load.status_code == 200:
-        with open(sv_path, 'wb') as file:
-            file.write(load.content)
-        print(f'Downloaded {software} in version {version}: {sv_path}.')
-    else:
-        print(f'Failed to download {software}.')
+
+    print(f"Starting download of {software}, version {version}...")
+    load = requests.get(link,timeout=300,stream=True)
+    total = int(load.headers.get('content-length', 0))
+
+    with open(sv_path, 'wb') as file,tqdm(
+        desc=f'Downloading {software}',
+        total=total,
+        unit='iB',
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for data in load.iter_content(chunk_size=1024):
+            size = file.write(data)
+            bar.update(size)
+        # file.write(load.content)
+    print(f'Downloaded {software} in version {version}: {sv_path}.')
+
 
 
 def download(sw_list,platform):
@@ -69,7 +77,7 @@ def download(sw_list,platform):
 
 
 if __name__ == '__main__':
-    softwares = [
+    software = [
         '7zip',
         'adobe_enterprise',
         'firefox_esr',
@@ -85,4 +93,4 @@ if __name__ == '__main__':
         'sysinternal_utilities'
     ]
 
-    download(softwares,'win64')
+    download(['gimp'], 'win64')

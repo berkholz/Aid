@@ -20,7 +20,6 @@ def isBinaryURL(ref, platform_string):
     return ref['href'].find(platform_string) > 0 and ref['href'].find('.asc') < 1 and ref['href'].find('sha256') < 1
 
 
-
 def call_api(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
@@ -64,19 +63,20 @@ def run():
         url_response = call_api(api_link_url.format(name=display_name, os=os, country=country, lang=lang))
         # print(url_response)
 
-
         tmp_url = url_response['downloadURL']
         # print(tmp_url)
         # print(app_version)
-        if (tmp_url.find('.exe')>=0):
+        if (tmp_url.find('.exe') >= 0):
             # print(tmp_url)
-            downloads.append({"app_platform": "win64", "url_bin": tmp_url, "url_asc": None,
-                              "url_sha256": None})
+            downloads.append(
+                {"app_platform": "win64", "url_bin": tmp_url, "sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
-        if (tmp_url.find('.apk')>=0):
+        if (tmp_url.find('.apk') >= 0):
             # print(tmp_url)
-            downloads.append({"app_platform": "android", "url_bin": tmp_url, "url_asc": None,
-                              "url_sha256": None})
+            downloads.append(
+                {"app_platform": "android", "url_bin": tmp_url, "sig_type": None, "sig_res": None, "hash_type": None,
+                 "hash_res": None, "url_pub_key": None})
 
     return toJSON(downloads)
 

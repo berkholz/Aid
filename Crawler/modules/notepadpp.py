@@ -43,9 +43,9 @@ def run():
     newest = main.find('a', href=True)
     url_newest = newest['href']
 
-    website= getWebSite(url_newest)
+    website = getWebSite(url_newest)
     tables = website.find('main', id='main').find('ul')
-    #print(tables)
+    # print(tables)
 
     global app_version
 
@@ -58,8 +58,9 @@ def run():
         if isBinaryURL(a, 'x64.exe'):
             tmp_url_bin = findPlatformInURL('x64.exe', a['href'])
             app_version = tmp_url_bin.split('/')[-2]
-            downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "url_asc": tmp_url_bin + ".sig",
-                              "url_sha256": None})
+            downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": 'sig_file',
+                              "sig_res": tmp_url_bin + ".sig", "hash_type": None,
+                              "hash_res": None, "url_pub_key": None})
 
             # print(url_base + a['href'])
     return toJSON(downloads)
