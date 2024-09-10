@@ -7,13 +7,19 @@ import requests
 
 from Db.database import get_checksum_link
 
+def verify_dir(path):
+    os.chdir(path)
+    for file in os.listdir(path):
+        if not verify(file):
+            return False
+    return True
 
 def verify(path):
     file_name = path.split('/')[-1]
     platform = path.split('/')[-2].split('-')[0]
     software = file_name.split('-')[0]
-    i=-1
-    if file_name.split('.')[-2]=='tar':
+    i = -1
+    if file_name.split('.')[-2] == 'tar':
         i = -2
     software_version = ".".join(file_name.split('-')[1].split('.')[:i])
 
@@ -36,23 +42,26 @@ def verify_hash(path, software, res):
 
     if cs_link:
         if cs_type == 'sha256_single':
-            online_sha256 = get_single_line_file_hash(link=cs_link)
+            online_hash = get_single_line_file_hash(link=cs_link).lower()
         elif cs_type == 'sha256_multi':
-            online_sha256 = get_multi_line_file_hash(cs_link, dwl_link)
-        elif cs_type == 'string':
-            online_sha256 = cs_link
+            online_hash = get_multi_line_file_hash(cs_link, dwl_link).lower()
+        elif cs_type == 'string' or cs_type == 'sha1_string':
+            online_hash = cs_link.lower()
         else:
             return True
 
         with open(path, 'rb') as f:
             bytes = f.read()
-            file_sha256 = hashlib.sha256(bytes).hexdigest()
+            if cs_type in ['sha256_single', 'sha256_multi', 'string']:
+                file_hash = hashlib.sha256(bytes).hexdigest()
+            else:
+                file_hash = hashlib.sha1(bytes).hexdigest()
 
-        print(f'Verifying hash of {software}:\n'
-              f'local:\t{file_sha256}\n'
-              f'online:\t{online_sha256}')
+        print(f'Verifying hash of {software}({cs_type}):\n'
+              f'local\t:\t{file_hash}\n'
+              f'online\t:\t{online_hash}')
 
-        return file_sha256 == online_sha256
+        return file_hash == online_hash
 
     else:
         return None
@@ -102,7 +111,7 @@ def verify_signature(file_path, res):
     signature_url = res[4]
     key_url = res[5]
 
-    if signature_type in ['asc_file', 'sig_file']:
+    if signature_type in ['asc_file', 'sig_file', 'gpg_file']:
         if not import_key_from_url(key_url):
             return False
         gpg = gnupg.GPG()
@@ -120,7 +129,6 @@ def verify_signature(file_path, res):
 
         if not download_file(signature_url, signature_filename):
             return False
-
 
         # Verify the signature
         with open(signature_filename, 'rb') as sig_file:
@@ -160,7 +168,7 @@ def get_multi_line_file_hash(cs_link, file_link):
 
 
 if __name__ == '__main__':
-    if verify('C:/Users/***REMOVED***/PycharmProjects/Aid/downloads/09_09_2024/win64-6/notepad++-v8.6.9.exe'):
+    if verify('C:/Users/***REMOVED***/PycharmProjects/Aid/downloads/10_09_2024/win64-3/sqldeveloper-23.1.1.345.2114.zip'):
         print('VERIFIED')
     else:
         print('NOT VERIFIED')

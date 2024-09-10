@@ -4,6 +4,8 @@ import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
 
+from Crawler.modules.putty import app_version
+
 download_url = 'https://www.oracle.com/database/sqldeveloper/technologies/download/'
 app_name = "sqldeveloper".lower()
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
@@ -47,26 +49,41 @@ def run():
     downloads = list()
     website = getWebSite()
     tables = website.find('table', class_='otable-w2')
-    print(tables)
+    # print(tables)
     global app_version
 
-    for a in tables.find_all('a', href=True):
+    for row in tables.find_all('tr'):
+        a = row.find('a', href=True)
         tmp_platform = ''
         tmp_url_bin = ''
         tmp_url_asc = ''
         tmp_url_sha256 = ''
+
+        if a is None or not a.has_attr('href'):
+            continue
+
         if isBinaryURL(a, 'x64.zip'):
             tmp_url_bin = 'https:' + findPlatformInURL('x64.zip', a['href'])
             app_version = tmp_url_bin.split('-')[1]
+
+            sha1_element = row.find('li', string=lambda text: 'SHA1:' in text if text else False)
+            sha1 = sha1_element.text.split(': ')[1]
+
             downloads.append(
-                {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
-                 "hash_res": None, "url_pub_key": None})
+                {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None,
+                 "hash_type": 'sha1_string', "hash_res": sha1, "url_pub_key": None})
+
         elif isBinaryURL(a, 'noarch.rpm'):
             # we have to find tar.gz, because it is a generic linux tar.gz package
             tmp_url_bin = 'https:' + findPlatformInURL('noarch.rpm', a['href'])
+
+            sha1_element = row.find('li', string=lambda text: 'SHA1:' in text if text else False)
+            sha1 = sha1_element.text.split(': ')[1]
+
             downloads.append(
-                {"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
-                 "hash_res": None, "url_pub_key": None})
+                {"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None,
+                 "hash_type": 'sha1_string', "hash_res": sha1, "url_pub_key": None})
+
             # print(url_base + a['href'])
     return toJSON(downloads)
 

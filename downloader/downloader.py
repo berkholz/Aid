@@ -1,11 +1,13 @@
 import datetime
 import os
 import re
+from sys import platform
 
 import requests
 from tqdm import tqdm
 
 import Db.database as db
+from Db.database import get_sw_list_for_platform
 
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
@@ -33,7 +35,12 @@ def parse_version(strg):
 def download_sw(software,platform,path):
     """downloads single software"""
     link,version = get_newest_link(software,platform)
+
     extension = link.split('?')[0].split('.')[-1]
+
+    if link.split('?')[0].split('.')[-2] == 'tar':
+        extension = 'tar.'+extension
+
 
     if '/' in version:
         version = '_'.join(version.split('/'))
@@ -58,8 +65,10 @@ def download_sw(software,platform,path):
 
 
 
-def download(sw_list,platform):
+def download(platform,sw_list=[]):
     """downloads list of software"""
+    if len(sw_list) == 0:
+        sw_list = get_sw_list_for_platform(platform)
     date_str = datetime.datetime.now().strftime('%d_%m_%Y')
     if not os.path.exists(DOWNLOAD_PATH+date_str):
         os.makedirs(DOWNLOAD_PATH+date_str)
@@ -73,24 +82,11 @@ def download(sw_list,platform):
 
     for f in sw_list:
         download_sw(f,platform,path)
+    return path
 
 
 
 if __name__ == '__main__':
-    software = [
-        '7zip',
-        'adobe_enterprise',
-        'firefox_esr',
-        'inkscape',
-        'keepass',
-        'notepad++',
-        'putty',
-        'sqlite_browser',
-        'stunnel',
-        'winscp',
-        'gimp',
-        'sqldeveloper',
-        'sysinternal_utilities'
-    ]
+    platform = 'win64'
 
-    download(['gimp'], 'win64')
+    download(platform)
