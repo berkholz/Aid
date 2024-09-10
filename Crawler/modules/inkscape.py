@@ -70,7 +70,7 @@ def run():
         tmp_url_bin = base_url + findPlatformInURL('/source/archive/xz', link_tar)
         file, sig = direct(tmp_url_bin)
         downloads.append({"app_platform": "linux", "url_bin": file,"sig_type": 'sig_file', "sig_res": sig, "hash_type": None,
-                 "hash_res": None, "url_pub_key": None})
+                 "hash_res": None, "url_pub_key": 'https://inkscape.org/~MarcJeanmougin/gpg/'})
 
 
     return toJSON(downloads)

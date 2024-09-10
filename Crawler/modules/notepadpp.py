@@ -4,6 +4,7 @@ import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
 import requests
+from gnupg import string_types
 
 download_url = 'https://notepad-plus-plus.org/downloads/'
 app_name = "notepad++".lower()
@@ -45,6 +46,7 @@ def run():
 
     website = getWebSite(url_newest)
     tables = website.find('main', id='main').find('ul')
+    tab_sha = website.find('main', id='main').find('a', href=lambda href: href and 'sha256' in href)
     # print(tables)
 
     global app_version
@@ -57,10 +59,11 @@ def run():
         tmp_url_sha256 = ''
         if isBinaryURL(a, 'x64.exe'):
             tmp_url_bin = findPlatformInURL('x64.exe', a['href'])
+            tmp_url_sha256 = tab_sha['href']
             app_version = tmp_url_bin.split('/')[-2]
             downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": 'sig_file',
-                              "sig_res": tmp_url_bin + ".sig", "hash_type": None,
-                              "hash_res": None, "url_pub_key": None})
+                              "sig_res": tmp_url_bin + ".sig", "hash_type": 'sha256_multi',
+                              "hash_res": tmp_url_sha256, "url_pub_key": 'https://notepad-plus-plus.org/gpg/nppGpgPub.asc'})
 
             # print(url_base + a['href'])
     return toJSON(downloads)
