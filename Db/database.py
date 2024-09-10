@@ -43,21 +43,30 @@ def append_software(list_software_dict):
             # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
             cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?",
                            (app_name, download['app_platform']))
-            entry = cursor.fetchone()
+            entry = cursor.fetchall()
+
             if entry:
-                version = entry[0]
+                version = entry[0][0]
                 if version == app_version:
                     print(f"App {app_name} in version {app_version} already exists.")
                     continue
-            print(f"Inserting App {app_name} in version {app_version}.")
-            cursor.execute(
-                "INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                (app_name, app_version, download['app_platform'], download['url_bin'], download['hash_type'], download['hash_res'], download['sig_type'],
-                 download['sig_res'], download['url_pub_key'], last_found, last_download))
-
-            # SQLs = "INSERT INTO " + sqlite_table_name + " VALUES (" + app_name + "," + app_version + "," + download['platform']+ "," + download['url_bin'] + a")"
-            # print(SQLs)
-            # cursor.execute(SQLs)
+                else:
+                    print(f"Updating App {app_name} to version {app_version}.")
+                    cursor.execute(
+                        f"UPDATE '{sqlite_table_name}' SET app_version='{app_version}', url_bin='{download['url_bin']}',"
+                        f"hash_type = '{download['hash_type']}', hash_res = '{download['hash_res']}',"
+                        f"sig_type = '{download['sig_type']}', sig_res = '{download['sig_res']}',"
+                        f"url_pub_key = '{download['url_pub_key']}', last_found = '{last_found}' WHERE app_name='{app_name}'"
+                    )
+            else:
+                print(f"Inserting App {app_name} in version {app_version}.")
+                cursor.execute(
+                    "INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, hash_type,"
+                                                         " hash_res, sig_type, sig_res, url_pub_key, last_found,"
+                                                         " last_download) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    (app_name, app_version, download['app_platform'], download['url_bin'],
+                     download['hash_type'], download['hash_res'], download['sig_type'], download['sig_res'],
+                     download['url_pub_key'], last_found, last_download))
             connection.commit()
 
 
@@ -74,6 +83,7 @@ def get_software_links(app_name, platform):
 
     return ret_dict
 
+
 def get_checksum_link(platform, app_name, version):
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
@@ -85,6 +95,18 @@ def get_checksum_link(platform, app_name, version):
         return entry
     else:
         return None
+
+def get_sw_list_for_platform(platform):
+    connection = sqlite3.connect(sqlite_db_file)
+    cursor = connection.cursor()
+    cursor.execute(
+        f"SELECT app_name FROM {sqlite_table_name} WHERE app_platform=\"{platform}\""
+    )
+    entries = cursor.fetchall()
+    ret_sw = []
+    for entry in entries:
+        ret_sw.append(entry[0])
+    return ret_sw
 
 
 def insert_dummy_data():
