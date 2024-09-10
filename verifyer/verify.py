@@ -1,27 +1,27 @@
 import hashlib
 import os
+from functools import reduce
 
 import gnupg
 import requests
 
 from Db.database import get_checksum_link
-from test import key_url
 
 
 def verify(path):
     file_name = path.split('/')[-1]
     platform = path.split('/')[-2].split('-')[0]
     software = file_name.split('-')[0]
-    software_version = ".".join(file_name.split('-')[1].split('.')[:-1])
+    i=-1
+    if file_name.split('.')[-2]=='tar':
+        i = -2
+    software_version = ".".join(file_name.split('-')[1].split('.')[:i])
 
     res = get_checksum_link(platform, software, software_version)
 
     hash_verify_status = verify_hash(path, software, res)
 
-    key_url = res[5]
-    if import_key_from_url(key_url):
-        sig_verify_status =verify_signature(path, res)
-
+    sig_verify_status = verify_signature(path, res)
 
     if hash_verify_status == False or sig_verify_status == False:
         return False
@@ -63,6 +63,7 @@ def download_file(url, local_filename):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Check for HTTP errors
+        # print(response.content)
         with open(local_filename, 'wb') as f:
             f.write(response.content)
         # print(f"Downloaded: {local_filename}")
@@ -76,7 +77,13 @@ def import_key_from_url(key_url):
     """Import a public key from a URL."""
     gpg = gnupg.GPG()
     try:
-        response = requests.get(key_url)
+        retry = 0
+        response = requests.get(key_url, timeout=300)
+        while response.status_code == 502 and retry < 5:
+            response = requests.get(key_url, timeout=300)
+            retry += 1
+
+        # print(response.status_code)
         key_data = response.text
         import_result = gpg.import_keys(key_data)
         if import_result.count == 0:
@@ -93,9 +100,11 @@ def verify_signature(file_path, res):
     """Verify a local file against its PGP signature downloaded from a URL."""
     signature_type = res[3]
     signature_url = res[4]
-    public_key = res[5]
+    key_url = res[5]
 
-    if signature_type == 'asc':
+    if signature_type in ['asc_file', 'sig_file']:
+        if not import_key_from_url(key_url):
+            return False
         gpg = gnupg.GPG()
 
         # Check if the local file exists
@@ -104,13 +113,20 @@ def verify_signature(file_path, res):
             return False
 
         # Download the signature file
-        signature_filename = "signature.asc"
+        if signature_type == 'sig_file':
+            signature_filename = "signature.sig"
+        else:
+            signature_filename = "signature.asc"
+
         if not download_file(signature_url, signature_filename):
             return False
+
 
         # Verify the signature
         with open(signature_filename, 'rb') as sig_file:
             verified = gpg.verify_file(sig_file, file_path)
+
+        os.remove(signature_filename)
 
         if verified:
             print("Signature verified successfully.")
@@ -118,8 +134,12 @@ def verify_signature(file_path, res):
             return True
         else:
             print("Signature verification failed.")
-            print(f"Status: {verified.status}")
+            print(f"Status: {verified.problems}")
             return False
+
+
+    elif signature_type is None:
+        return True
 
 
 def get_single_line_file_hash(link):
@@ -140,7 +160,7 @@ def get_multi_line_file_hash(cs_link, file_link):
 
 
 if __name__ == '__main__':
-    if verify('C:/Users/bdbos-adm29/PycharmProjects/Aid/downloads/09_09_2024/win64-2/stunnel-5.72.exe'):
+    if verify('C:/Users/bdbos-adm29/PycharmProjects/Aid/downloads/09_09_2024/win64-6/notepad++-v8.6.9.exe'):
         print('VERIFIED')
     else:
         print('NOT VERIFIED')
