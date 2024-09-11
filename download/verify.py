@@ -5,14 +5,32 @@ from functools import reduce
 import gnupg
 import requests
 
-from Db.database import get_checksum_link
+from Db.database import get_checksum_link, get_sw_list_for_platform, set_verified_version
+from download.utils import *
 
-def verify_dir(path):
-    os.chdir(path)
-    for file in os.listdir(path):
-        if not verify(file):
-            return False
+
+def verify_downloads(platform, sw_list=[]):
+    if len(sw_list) == 0:
+        sw_list= get_sw_list_for_platform(platform)
+
+    for sw in sw_list:
+        link, version = get_newest_link(sw, platform)
+
+        extension = link.split('?')[0].split('.')[-1]
+
+        if link.split('?')[0].split('.')[-2] == 'tar':
+            extension = 'tar.' + extension
+
+        if '/' in version:
+            version = '_'.join(version.split('/'))
+
+        dir = DOWNLOAD_PATH + "/" + sw + '/' + version + '/' + platform + '/'
+        sv_path = dir + sw + "-" + version + "." + extension
+        if os.path.exists(sv_path):
+            if not verify(sv_path):
+                return False
     return True
+
 
 def verify(path):
     file_name = path.split('/')[-1]
@@ -22,9 +40,10 @@ def verify(path):
     if file_name.split('.')[-2] == 'tar':
         i = -2
     software_version = ".".join(file_name.split('-')[1].split('.')[:i])
-
     res = get_checksum_link(platform, software, software_version)
-
+    if res is None:
+        print(f'software {software} version {software_version} not found in database')
+        return False
     hash_verify_status = verify_hash(path, software, res)
 
     sig_verify_status = verify_signature(path, res)
@@ -32,6 +51,7 @@ def verify(path):
     if hash_verify_status == False or sig_verify_status == False:
         return False
     else:
+        set_verified_version(software,platform,software_version)
         return True
 
 
@@ -109,9 +129,11 @@ def verify_signature(file_path, res):
     """Verify a local file against its PGP signature downloaded from a URL."""
     signature_type = res[3]
     signature_url = res[4]
+    hash_url = res[2]
     key_url = res[5]
 
     if signature_type in ['asc_file', 'sig_file', 'gpg_file']:
+        checking_hash = False
         if not import_key_from_url(key_url):
             return False
         gpg = gnupg.GPG()
@@ -120,6 +142,14 @@ def verify_signature(file_path, res):
         if not os.path.exists(file_path):
             print(f"Error: The file {file_path} does not exist.")
             return False
+        if hash_url is not None and hash_url+'.asc' == signature_url:
+
+            hash_filename = 'tmp_hash'
+            if not download_file(hash_url, hash_filename):
+                return False
+            file_path = hash_filename
+            checking_hash = True
+
 
         # Download the signature file
         if signature_type == 'sig_file':
@@ -135,6 +165,8 @@ def verify_signature(file_path, res):
             verified = gpg.verify_file(sig_file, file_path)
 
         os.remove(signature_filename)
+        if checking_hash:
+            os.remove(hash_filename)
 
         if verified:
             print("Signature verified successfully.")
@@ -161,14 +193,18 @@ def get_multi_line_file_hash(cs_link, file_link):
 
     hash_file = requests.get(cs_link)
     lines = hash_file.content.decode('utf-8')
+
+    rt_string = None
     for line in lines.split('\n'):
         if tmp in line:
-            return line.split('  ')[0]
-    return None
+            rt_string = line.split('  ')[0]
+    if rt_string is None:
+        tmp = "/".join(file_link.split('/')[-1:])
+        for line in lines.split('\n'):
+            if tmp in line:
+                rt_string = line.split('  ')[0]
+    return rt_string
 
 
 if __name__ == '__main__':
-    if verify('C:/Users/***REMOVED***/PycharmProjects/Aid/downloads/10_09_2024/win64-3/sqldeveloper-23.1.1.345.2114.zip'):
-        print('VERIFIED')
-    else:
-        print('NOT VERIFIED')
+    verify_downloads('win64')

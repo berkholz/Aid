@@ -8,6 +8,7 @@ download_url = 'https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html'
 app_name = "putty".lower()
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 app_version = 0
+pub_key= 'https://www.chiark.greenend.org.uk/~sgtatham/putty/keys/release-2023.asc'
 
 
 def findPlatformInURL(platform, url):
@@ -59,14 +60,14 @@ def run():
                 app_version = tmp_url_bin.split('-')[2]
                 downloads.append({"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": 'gpg_file',
                                   "sig_res": tmp_url_bin + '.gpg', "hash_type": None, "hash_res": None,
-                                  "url_pub_key": None})
+                                  "url_pub_key": pub_key})
 
             elif isBinaryURL(a, 'tar.gz'):
                 # we have to find tar.gz, because it is a generic linux tar.gz package
-                tmp_url_bin = base_url + findPlatformInURL('tar.gz', a['href'])
+                tmp_url_bin = findPlatformInURL('tar.gz', a['href'])
                 downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": 'gpg_file',
                                   "sig_res": tmp_url_bin + '.gpg', "hash_type": None, "hash_res": None,
-                                  "url_pub_key": None})
+                                  "url_pub_key": pub_key})
                 # print(url_base + a['href'])
     return toJSON(downloads)
 
