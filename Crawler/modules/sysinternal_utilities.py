@@ -44,6 +44,7 @@ def run():
 
     global app_version
     app_version = website.find('time').text
+    app_version = "_".join(app_version.split("/"))
 
     if isBinaryURL(complete, '.zip'):
         tmp_url_bin = findPlatformInURL('.zip', complete)
