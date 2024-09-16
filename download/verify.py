@@ -4,8 +4,9 @@ from functools import reduce
 
 import gnupg
 import requests
+from tqdm import tqdm
 
-from Db.database import get_checksum_link, get_sw_list_for_platform, set_verified_version
+from Db.database import get_checksum_link, get_sw_list_for_platform, set_verified_version, get_software_link
 from download.utils import *
 
 
@@ -14,18 +15,23 @@ def verify_downloads(platform, sw_list=[]):
         sw_list= get_sw_list_for_platform(platform)
 
     for sw in sw_list:
-        link, version = get_newest_link(sw, platform)
+
+        app_name = sw['program']
+        app_platform = sw['platform']
+        app_version = sw['version']
+
+        link= get_software_link(app_name, app_platform, app_version)
 
         extension = link.split('?')[0].split('.')[-1]
 
         if link.split('?')[0].split('.')[-2] == 'tar':
             extension = 'tar.' + extension
 
-        if '/' in version:
-            version = '_'.join(version.split('/'))
+        if '/' in app_version:
+            app_version = '_'.join(app_version.split('/'))
 
-        dir = DOWNLOAD_PATH + "/" + sw + '/' + version + '/' + platform + '/'
-        sv_path = dir + sw + "-" + version + "." + extension
+        dir = DOWNLOAD_PATH + "/" + sw + '/' + app_version + '/' + platform + '/'
+        sv_path = dir + sw + "-" + app_version + "." + extension
         if os.path.exists(sv_path):
             if not verify(sv_path):
                 return False
@@ -42,7 +48,7 @@ def verify(path):
     software_version = ".".join(file_name.split('-')[1].split('.')[:i])
     res = get_checksum_link(platform, software, software_version)
     if res is None:
-        print(f'software {software} version {software_version} not found in database')
+        tqdm.write(f'software {software} version {software_version} not found in database')
         return False
     hash_verify_status = verify_hash(path, software, res)
 
@@ -77,7 +83,7 @@ def verify_hash(path, software, res):
             else:
                 file_hash = hashlib.sha1(bytes).hexdigest()
 
-        print(f'Verifying hash of {software}({cs_type}):\n'
+        tqdm.write(f'Verifying hash of {software}({cs_type}):\n'
               f'local\t:\t{file_hash}\n'
               f'online\t:\t{online_hash}')
 
@@ -97,7 +103,7 @@ def download_file(url, local_filename):
             f.write(response.content)
         # print(f"Downloaded: {local_filename}")
     except requests.RequestException as e:
-        print(f"Error downloading {url}: {e}")
+        tqdm.write(f"Error downloading {url}: {e}")
         return False
     return True
 
@@ -140,7 +146,7 @@ def verify_signature(file_path, res):
 
         # Check if the local file exists
         if not os.path.exists(file_path):
-            print(f"Error: The file {file_path} does not exist.")
+            tqdm.write(f"Error: The file {file_path} does not exist.")
             return False
         if hash_url is not None and hash_url+'.asc' == signature_url:
 
@@ -169,12 +175,12 @@ def verify_signature(file_path, res):
             os.remove(hash_filename)
 
         if verified:
-            print("Signature verified successfully.")
-            print(f"Signed by: {verified.username}")
+            tqdm.write("Signature verified successfully.")
+            tqdm.write(f"Signed by: {verified.username}")
             return True
         else:
-            print("Signature verification failed.")
-            print(f"Status: {verified.problems}")
+            tqdm.write("Signature verification failed.")
+            tqdm.write(f"Status: {verified.problems}")
             return False
 
 
@@ -189,7 +195,6 @@ def get_single_line_file_hash(link):
 
 def get_multi_line_file_hash(cs_link, file_link):
     tmp = "/".join(file_link.split('/')[-3:])
-    print(tmp)
 
     hash_file = requests.get(cs_link)
     lines = hash_file.content.decode('utf-8')

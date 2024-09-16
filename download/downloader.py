@@ -1,13 +1,15 @@
 import datetime
 import os
 import re
+import threading
 from sys import platform
 
 import requests
 from tqdm import tqdm
+from tqdm.contrib.concurrent import thread_map
 
 import Db.database as db
-from Db.database import get_sw_list_for_platform, set_verified_version, get_verified_version
+from Db.database import get_sw_list_for_platform, set_verified_version, get_verified_version, get_software_link
 from download.utils import *
 from download.verify import verify
 
@@ -18,33 +20,34 @@ def path_init():
         os.makedirs(DOWNLOAD_PATH)
 
 
-def download_sw(software,platform,path):
+def download_sw(software, app_platfom, version, path):
     """downloads single software"""
-    link,version = get_newest_link(software,platform)
 
+    link = get_software_link(software, app_platfom, version)
+
+    #print (link)
     extension = link.split('?')[0].split('.')[-1]
 
     if link.split('?')[0].split('.')[-2] == 'tar':
         extension = 'tar.'+extension
 
-    dir = path+"/"+software+'/'+version+'/'+platform+'/'
+    downl_dir = path + "/" + software + '/' + version + '/' + app_platfom + '/'
 
-    if not os.path.exists(dir):
-        os.makedirs(dir,exist_ok=True)
-    sv_path = dir +software+"-"+version+"."+extension
+    if not os.path.exists(downl_dir):
+        os.makedirs(downl_dir, exist_ok=True)
+    sv_path = downl_dir + software + "-" + version + "." + extension
 
-    verified_version = get_verified_version(software,platform)
-    if os.path.exists(sv_path) and verified_version==version:
-        return
-    elif os.path.exists(sv_path):
+    verified_version = get_verified_version(software, app_platfom)
+
+    if os.path.exists(sv_path):
         res = verify(sv_path)
         if res is True:
-            print(f'verified unverified download: {software} version: {version}')
+            tqdm.write(f'verified download: {software} version: {version}')
             return
         else:
-            print('unverifyable Download found')
+            tqdm.write('unverifiable Download found')
 
-    print(f"Starting download of {software}, version {version}...")
+    tqdm.write(f"Starting download of {software}, version {version}...")
     load = requests.get(link,timeout=300,stream=True)
     total = int(load.headers.get('content-length', 0))
 
@@ -54,7 +57,12 @@ def download_sw(software,platform,path):
             total=total,
             unit='iB',
             unit_scale=True,
-            unit_divisor=1024,
+            unit_divisor=2048,
+            position=0,
+            leave=True,
+            dynamic_ncols=True,
+            colour='blue',
+            text_colour='blue',
         ) as bar:
             for data in load.iter_content(chunk_size=1024):
                 size = file.write(data)
@@ -63,14 +71,14 @@ def download_sw(software,platform,path):
         print(e)
         os.remove(sv_path)
 
-    print(f'Downloaded {software} in version {version}: {sv_path}.')
-    print(f'staring verification of {software}')
+    tqdm.write(f'Downloaded {software} in version {version}: {sv_path}.')
+    tqdm.write(f'staring verification of {software}')
     result = verify(sv_path)
     if not result:
-        print(f'verification failed, deleting {software} from path {sv_path}')
+        tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
         os.remove(sv_path)
     else:
-        print(f'verification successful.')
+        tqdm.write(f'verification successful.')
 
 
 
@@ -83,6 +91,21 @@ def download(platform,sw_list=[]):
     for f in sw_list:
         download_sw(f,platform,DOWNLOAD_PATH)
     return DOWNLOAD_PATH + '/'
+
+def download_gui(sw_list):
+    def wrapper(app):
+        app_name = app['program']
+        app_platform = app['platform']
+        app_version = app['version']
+
+        download_sw(app_name, app_platform, app_version, DOWNLOAD_PATH)
+
+    thread_map(wrapper, sw_list,position=1,leave=True)
+
+
+
+
+
 
 
 
