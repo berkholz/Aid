@@ -47,19 +47,10 @@ def append_software(list_software_dict):
                            (app_name, download['app_platform']))
             entry = cursor.fetchall()
 
-            if entry:
-                version = entry[0][0]
-                if version == app_version:
-                    print(f"App {app_name} in version {app_version} already exists.")
-                    continue
-                else:
-                    print(f"Updating App {app_name} to version {app_version}.")
-                    cursor.execute(
-                        f"UPDATE '{sqlite_table_name}' SET app_version='{app_version}', url_bin='{download['url_bin']}',"
-                        f"hash_type = '{download['hash_type']}', hash_res = '{download['hash_res']}',"
-                        f"sig_type = '{download['sig_type']}', sig_res = '{download['sig_res']}',"
-                        f"url_pub_key = '{download['url_pub_key']}', last_found = '{last_found}' WHERE app_name='{app_name} and app_platform='{download['app_platform']}'",
-                    )
+            if entry and entry[0][0] == app_version:
+                print(f"App {app_name} in version {app_version} already exists.")
+                continue
+
             else:
                 print(f"Inserting App {app_name} in version {app_version}.")
                 cursor.execute(
@@ -72,14 +63,15 @@ def append_software(list_software_dict):
             connection.commit()
 
 
-def get_software_link(app_name, platform):
+def get_software_link(app_name, app_platform, app_version):
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
-    cursor.execute(
-        f"SELECT url_bin , app_version FROM {sqlite_table_name} WHERE app_name=\"{app_name}\" AND app_platform=\"{platform}\"")
-    entry = cursor.fetchone()
 
-    return entry
+    cursor.execute(
+        f"SELECT url_bin FROM {sqlite_table_name} WHERE app_name=\"{app_name}\" AND app_platform=\"{app_platform}\" AND app_version=\"{app_version}\"")
+    entry = cursor.fetchone()
+    # print(entry)
+    return entry[0]
 
 
 def get_checksum_link(platform, app_name, version):
@@ -94,6 +86,43 @@ def get_checksum_link(platform, app_name, version):
         return entry
     else:
         return None
+
+
+def get_available_software():
+    connection = sqlite3.connect(sqlite_db_file)
+    cursor = connection.cursor()
+    cursor.execute(
+        f"SELECT app_name, app_version, app_platform FROM {sqlite_table_name};"
+    )
+
+    program_data = {}
+
+    for row in cursor.fetchall():
+        app_name, app_version, app_platform = row
+        platform = app_platform
+
+        if app_name not in program_data:
+            program_data[app_name] = []
+
+        #  check for version existence in list
+        version_exists = None
+        for version_data in program_data[app_name]:
+            if version_data['version'] == app_version:
+                version_exists = True
+                version_data[platform] = False
+                break
+
+        # When not existant add version to list
+        if not version_exists:
+            version_data = {
+                'version': app_version,
+                'win64': False if platform == 'win64' else None,
+                'linux': False if platform == 'linux' else None,
+                'android': False if platform == 'android' else None
+            }
+            program_data[app_name].append(version_data)
+
+    return program_data
 
 
 def get_sw_list_for_platform(platform):
@@ -119,17 +148,20 @@ def set_verified_version(software, platform, version):
     connection.commit()
     connection.close()
 
+
 def get_verified_version(software, platform):
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT verified_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?", (software, platform)
+        "SELECT verified_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?",
+        (software, platform)
     )
     entry = cursor.fetchone()
     if entry:
         return entry[0]
     else:
         return None
+
 
 def insert_dummy_data():
     connection = sqlite3.connect(sqlite_db_file)
