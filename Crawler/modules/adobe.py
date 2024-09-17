@@ -9,7 +9,8 @@ api_url = 'https://rdc.adobe.io/reader/products?lang={lang}&site=enterprise&os={
 api_link_url = 'https://rdc.adobe.io/reader/downloadUrl?name={name}&nativeOs={os}&os={os}&site=enterprise&lang={lang}&country={country}&api_key=dc-get-adobereader-cdn'
 
 app_name = "adobe_enterprise".lower()
-
+full_name = "Adobe Reader Enterprise"
+default_download = 'win64'
 
 def findPlatformInURL(platform, url):
     if url.find(platform) > 0 and url.find('.asc') < 1 and url.find('sha256') < 1:
@@ -32,12 +33,15 @@ def call_api(url):
 
 
 def toJSON(d):
+
     json_result = {
         "app_name": app_name,
+        "full_name": full_name,
+        "default_download": default_download,
         "app_version": app_version,
         "downloads": d,
         "last_found": date.today().isoformat(),
-        "last_download": "0000-00-00"
+        "last_download": "0000-00-00",
     }
     return json_result
 
