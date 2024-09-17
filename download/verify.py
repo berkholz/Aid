@@ -9,15 +9,18 @@ from download.utils import *
 
 
 def verify_downloads(platform, sw_list=[]):
+    """methode initiates checksum and signature verification for given software list"""
+    # when software list is empty, we take all available software for our platform
     if len(sw_list) == 0:
         sw_list = get_sw_list_for_platform(platform)
 
+    # for every app we start the verification process
     for sw in sw_list:
-
         app_name = sw['program']
         app_platform = sw['platform']
         app_version = sw['version']
 
+        # gets download link from db to get path and filename on system
         link = get_software_link(app_name, app_platform, app_version)
 
         extension = link.split('?')[0].split('.')[-1]
@@ -31,12 +34,14 @@ def verify_downloads(platform, sw_list=[]):
         dir = DOWNLOAD_PATH + "/" + sw + '/' + app_version + '/' + platform + '/'
         sv_path = dir + sw + "-" + app_version + "." + extension
         if os.path.exists(sv_path):
+            # start verification of file
             if not verify(sv_path):
                 return False
     return True
 
 
 def verify(path):
+    """initiates verification for a specific file"""
     file_name = path.split('/')[-1]
     platform = path.split('/')[-2].split('-')[0]
     software = file_name.split('-')[0]
@@ -44,14 +49,20 @@ def verify(path):
     if file_name.split('.')[-2] == 'tar':
         i = -2
     software_version = ".".join(file_name.split('-')[1].split('.')[:i])
+
+    # we get our verification source
     res = get_checksum_link(platform, software, software_version)
     if res is None:
         tqdm.write(f'software {software} version {software_version} not found in database')
         return False
+
+    # we start verifying checksums
     hash_verify_status = verify_hash(path, software, res)
 
+    # and the continue with signatures
     sig_verify_status = verify_signature(path, res)
 
+    # check for failed verification
     if hash_verify_status == False or sig_verify_status == False:
         return False
     else:
@@ -59,10 +70,14 @@ def verify(path):
 
 
 def verify_hash(path, software, res):
+    """checksum verifcation"""
+
+    # we load the relevant source information in variables
     dwl_link = res[0]
     cs_type = res[1]
     cs_link = res[2]
 
+    # first we check if there is a checksum available and how it is provided
     if cs_link:
         if cs_type == 'sha256_single':
             online_hash = get_single_line_file_hash(link=cs_link).lower()
@@ -73,6 +88,7 @@ def verify_hash(path, software, res):
         else:
             return True
 
+    # then we check if the local file matches that checksums
         with open(path, 'rb') as f:
             bytes = f.read()
             if cs_type in ['sha256_single', 'sha256_multi', 'string']:
@@ -185,11 +201,13 @@ def verify_signature(file_path, res):
 
 
 def get_single_line_file_hash(link):
+    # helper to get the checksum from a single lined sha256 file
     hash_file = requests.get(link)
     return hash_file.content.decode('utf-8').split('  ')[0]
 
 
 def get_multi_line_file_hash(cs_link, file_link):
+    # helper to get the checksum from a multi line sha256 file
     tmp = "/".join(file_link.split('/')[-3:])
 
     hash_file = requests.get(cs_link)

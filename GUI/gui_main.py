@@ -20,6 +20,7 @@ from PIL import Image, ImageTk
 
 
 class ProgramTable(tk.Frame):
+    """Main Frame for the control of AID"""
     def __init__(self, master):
         super().__init__(master)
         self.master = master
@@ -33,6 +34,7 @@ class ProgramTable(tk.Frame):
 
 
     def create_widgets(self):
+        """creates the version table view"""
         self.loading_animation.start()
         self.table_frame = ttk.Frame(self.master)
         self.table_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
@@ -78,18 +80,19 @@ class ProgramTable(tk.Frame):
         threading.Thread(target=self.load_data).start()
 
     def load_data(self):
+        """loads the application data from the database and inserts it into the table"""
 
+        # crawl new versions
         application_links = crawler.getApplications("Crawler")
 
+        # insert results to db
         Db.database.init_db()
         Db.database.append_software(application_links)
 
+        # load all available apps (paltform and version) from db
         programs = Db.database.get_available_software()
 
-        #    program_item = self.tree.insert("", "end", text=program, tags=('program',))
-
-        print(programs)
-
+        # diplay them all
         for program, versions in programs.items():
             program_item = self.tree.insert("", "end", text=program, tags=('program',))
 
@@ -112,6 +115,7 @@ class ProgramTable(tk.Frame):
         self.loading_animation.stop()
 
     def on_click(self, event):
+        """Handles checkbox click"""
         region = self.tree.identify("region", event.x, event.y)
         if region == "cell":
             column = self.tree.identify_column(event.x)
@@ -124,6 +128,7 @@ class ProgramTable(tk.Frame):
                     self.update_checkbox(item, column, new_value == "☑")
 
     def update_checkbox(self, item, column, is_checked):
+        """updates checkbox text in table"""
         program = self.tree.parent(item)
         program_name = self.tree.item(program, "text")
         version = self.tree.item(item, "text")
@@ -132,6 +137,7 @@ class ProgramTable(tk.Frame):
         print(f"Checkbox for {program_name} version {version} - {platform}: {state}")
 
     def download(self, app_list, pkg_name):
+        """starts the download of selected apps"""
         download_gui(app_list)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -144,6 +150,7 @@ class ProgramTable(tk.Frame):
 
 
     def process_clicked(self):
+        """progresses download and pack button click"""
         print("download clicked")
         app_list, pkg_name = self.get_selected()
         self.loading_animation.start("creating package")
@@ -151,6 +158,7 @@ class ProgramTable(tk.Frame):
 
 
     def get_selected(self):
+        """checks checkbox states and generates a dictionary of selected software"""
         selected_versions = []
         for program in self.tree.get_children():
             program_name = self.tree.item(program, 'text')
