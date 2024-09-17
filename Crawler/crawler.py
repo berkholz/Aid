@@ -9,9 +9,10 @@ json_list = list()
 ### BASIC configuration
 module_path = "modules"
 
+
 def getApplications(relative_path=''):
     # iterate over all mpython files in directory crawler_configuration.module_path
-    for f in glob.glob(os.path.dirname(__file__)+"/" + module_path + "/*.py"):
+    for f in glob.glob(os.path.dirname(__file__) + "/" + module_path + "/*.py"):
         if os.path.isfile(f) and not os.path.basename(f).startswith('_'):
             all_list.append(os.path.basename(f)[:-3])
 
@@ -30,6 +31,7 @@ def getApplications(relative_path=''):
         # run modules function run()
         json_list.append(mod.run())
     return json_list
+
 
 if __name__ == "__main__":
     print(getApplications())
