@@ -19,6 +19,7 @@ gpg.encoding = 'utf-8'
 
 
 def package(sw_list, name):
+    """generates package path and initializes packaging process"""
     pkg_name = PACKAGE_NAME_PATTERN.format(datetime.now().strftime('%y_%m_%d'), name)
     pkg_path = PACKAGE_PATH + pkg_name
     os.makedirs(pkg_path, exist_ok=True)
@@ -30,6 +31,7 @@ def package(sw_list, name):
 
 
 def collect_software(sw_list, dest_path):
+    """collects the software needed to pack"""
     for sw in sw_list:
 
         app_name = sw['program']
@@ -43,10 +45,12 @@ def collect_software(sw_list, dest_path):
 
 
 def insert_db(path):
+    """inserts db file to path"""
     shutil.copy(sqlite_db_file, path)
 
 
 def generate_sums(path):
+    """generates sha256 checksum for every file in path and signs the checksum file afterward"""
     hash_file = path + 'sha256sum.txt'
 
     for filename in os.listdir(path):
@@ -75,4 +79,4 @@ def generate_sums(path):
 
 
 if __name__ == '__main__':
-    package(['7zip', 'firefox_esr', 'putty'], 'win64', 'Testpkg')
+    package(['7zip', 'firefox_esr', 'putty'],  'Testpkg')

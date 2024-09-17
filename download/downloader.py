@@ -84,6 +84,7 @@ def download(platform, sw_list=[]):
 
 
 def download_gui(sw_list):
+    """download methode for application gui"""
     def wrapper(app):
         app_name = app['program']
         app_platform = app['platform']

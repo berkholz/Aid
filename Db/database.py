@@ -45,6 +45,7 @@ def init_db():
 
 
 def add_product(app_name, full_name, default_download):
+    """adds a product to the database if it doesn't exist"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
@@ -61,6 +62,7 @@ def add_product(app_name, full_name, default_download):
 
 
 def append_software(list_software_dict):
+    """adds a software-versions to the database if it doesn't exist'"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
@@ -94,6 +96,7 @@ def append_software(list_software_dict):
 
 
 def get_software_link(app_name, app_platform, app_version):
+    """provides the download link of an application from the database"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
@@ -105,6 +108,7 @@ def get_software_link(app_name, app_platform, app_version):
 
 
 def get_checksum_link(platform, app_name, version):
+    """provides verification  source for an application from the database"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     cursor.execute(
@@ -119,6 +123,7 @@ def get_checksum_link(platform, app_name, version):
 
 
 def get_available_software():
+    """returns all available softwarea and generates a dictionary for table view"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
@@ -169,6 +174,7 @@ def get_available_software():
 
 
 def get_sw_list_for_platform(platform):
+    """lists all available apps for a platform"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     cursor.execute(
@@ -182,6 +188,7 @@ def get_sw_list_for_platform(platform):
 
 
 def insert_dummy_data():
+    """inserts dummy data for testing"""
     connection = sqlite3.connect(sqlite_db_file)
     print(sqlite_db_file)
     cursor = connection.cursor()
