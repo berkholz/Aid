@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class LoadingAnimation:
     def __init__(self, master):
         self.master = master
@@ -7,7 +8,7 @@ class LoadingAnimation:
         self.label.place(relx=0.5, rely=0.5, anchor='center')  # Center the label
         self.running = False
 
-    def animate(self,message):
+    def animate(self, message):
         if self.running:
             current_text = self.label['text']
             if current_text == f"{message} .":
@@ -18,7 +19,7 @@ class LoadingAnimation:
                 self.label['text'] = f"{message} ."
             self.master.after(500, self.animate, message)
 
-    def start(self,message='Loading'):
+    def start(self, message='Loading'):
         if not self.running:
             self.running = True
             self.label.place(relx=0.5, rely=0.5, anchor='center')  # Make the label visible

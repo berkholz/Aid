@@ -1,8 +1,5 @@
 import os.path
 import sqlite3
-from platform import platform
-
-from clint.textui.prompt import query
 
 ### CONFIGURATION
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,11 +39,12 @@ def init_db():
         "last_download"	TEXT,
         "verified_version"	TEXT,
         PRIMARY KEY("app_name","app_version","app_platform"),
-        FOREIGN KEY (app_name) REFERENCES """+product_table_name+"""(app_name)
+        FOREIGN KEY (app_name) REFERENCES """ + product_table_name + """(app_name)
         );
     """)
 
-def add_product(app_name, full_name,default_download):
+
+def add_product(app_name, full_name, default_download):
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
@@ -75,8 +73,9 @@ def append_software(list_software_dict):
         for download in software['downloads']:
 
             # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
-            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=? AND app_version=?",
-                           (app_name, download['app_platform'], app_version))
+            cursor.execute(
+                "SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=? AND app_version=?",
+                (app_name, download['app_platform'], app_version))
             entry = cursor.fetchall()
             if entry and entry[0][0] == app_version:
                 print(f"App {app_name} in version {app_version} already exists.")
@@ -138,10 +137,9 @@ def get_available_software():
 
         connection2 = sqlite3.connect(sqlite_db_file)
         cursor2 = connection2.cursor()
-        query2 = "SELECT default_download FROM "+product_table_name+" WHERE app_name = ?"
+        query2 = "SELECT default_download FROM " + product_table_name + " WHERE app_name = ?"
         cursor2.execute(query2, (app_name,))
         default = cursor2.fetchone()[0]
-
 
         if app_name not in program_data:
             program_data[app_name] = []
@@ -151,16 +149,19 @@ def get_available_software():
         for version_data in program_data[app_name]:
             if version_data['version'] == app_version:
                 version_exists = True
-                version_data[platform] = True if platform in default and last_found==max_last_found else False
+                version_data[platform] = True if platform in default and last_found == max_last_found else False
                 break
 
         # When not existant add version to list
         if not version_exists:
             version_data = {
                 'version': app_version,
-                'win64': None if platform != 'win64' else (True if 'win64' in default and last_found==max_last_found else False),
-                'linux':  None if platform != 'linux' else (True if 'linux' in default and last_found==max_last_found else False),
-                'android':  None if platform != 'android' else (True if 'android' in default and last_found==max_last_found else False)
+                'win64': None if platform != 'win64' else (
+                    True if 'win64' in default and last_found == max_last_found else False),
+                'linux': None if platform != 'linux' else (
+                    True if 'linux' in default and last_found == max_last_found else False),
+                'android': None if platform != 'android' else (
+                    True if 'android' in default and last_found == max_last_found else False)
             }
             program_data[app_name].append(version_data)
 

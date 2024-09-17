@@ -1,6 +1,4 @@
 import hashlib
-import os
-from functools import reduce
 
 import gnupg
 import requests
@@ -12,7 +10,7 @@ from download.utils import *
 
 def verify_downloads(platform, sw_list=[]):
     if len(sw_list) == 0:
-        sw_list= get_sw_list_for_platform(platform)
+        sw_list = get_sw_list_for_platform(platform)
 
     for sw in sw_list:
 
@@ -20,7 +18,7 @@ def verify_downloads(platform, sw_list=[]):
         app_platform = sw['platform']
         app_version = sw['version']
 
-        link= get_software_link(app_name, app_platform, app_version)
+        link = get_software_link(app_name, app_platform, app_version)
 
         extension = link.split('?')[0].split('.')[-1]
 
@@ -83,8 +81,8 @@ def verify_hash(path, software, res):
                 file_hash = hashlib.sha1(bytes).hexdigest()
 
         tqdm.write(f'Verifying hash of {software}({cs_type}):\n'
-              f'local\t:\t{file_hash}\n'
-              f'online\t:\t{online_hash}')
+                   f'local\t:\t{file_hash}\n'
+                   f'online\t:\t{online_hash}')
 
         return file_hash == online_hash
 
@@ -147,14 +145,13 @@ def verify_signature(file_path, res):
         if not os.path.exists(file_path):
             tqdm.write(f"Error: The file {file_path} does not exist.")
             return False
-        if hash_url is not None and hash_url+'.asc' == signature_url:
+        if hash_url is not None and hash_url + '.asc' == signature_url:
 
             hash_filename = 'tmp_hash'
             if not download_file(hash_url, hash_filename):
                 return False
             file_path = hash_filename
             checking_hash = True
-
 
         # Download the signature file
         if signature_type == 'sig_file':
