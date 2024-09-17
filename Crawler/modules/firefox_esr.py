@@ -7,6 +7,9 @@ from urllib.error import URLError, HTTPError
 from Crawler.modules.stunnel import base_url, app_name
 
 app_name = "firefox_esr"
+full_name = "Firefox ESR"
+default_download = 'win64'
+
 download_url = 'https://ftp.mozilla.org/pub/firefox/releases/'
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 
@@ -50,12 +53,15 @@ def getWebSite():
 
 
 def toJSON(d):
+
     json_result = {
         "app_name": app_name,
+        "full_name": full_name,
+        "default_download": default_download,
         "app_version": app_version,
         "downloads": d,
         "last_found": date.today().isoformat(),
-        "last_download": "0000-00-00"
+        "last_download": "0000-00-00",
     }
     return json_result
 

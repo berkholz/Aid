@@ -8,6 +8,8 @@ from gnupg import string_types
 
 download_url = 'https://notepad-plus-plus.org/downloads/'
 app_name = "notepad++".lower()
+full_name = "Notepad++"
+default_download = 'win64'
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 
 
@@ -29,10 +31,12 @@ def getWebSite(url):
 def toJSON(d):
     json_result = {
         "app_name": app_name,
+        "full_name": full_name,
+        "default_download": default_download,
         "app_version": app_version,
         "downloads": d,
         "last_found": date.today().isoformat(),
-        "last_download": "0000-00-00"
+        "last_download": "0000-00-00",
     }
     return json_result
 

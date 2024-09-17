@@ -8,45 +8,74 @@ cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
 # print(sqlite_db_file)
 sqlite_table_name = "software"
+product_table_name = "products"
 
 
 def init_db():
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
-    cursor.execute("""
-                   CREATE TABLE IF NOT EXISTS """ + sqlite_table_name + """(
-	"app_name"	TEXT NOT NULL,
-	"app_version"	TEXT NOT NULL,
-	"app_platform"	TEXT NOT NULL,
-	"url_bin"	TEXT NOT NULL,
-	"hash_type"	TEXT,
-	"hash_res"	TEXT,
-	"sig_type"	TEXT,
-	"sig_res"	TEXT,
-	"url_pub_key"	TEXT,
-	"last_found"	TEXT NOT NULL,
-	"last_download"	TEXT,
-	"verified_version"	TEXT,
-	PRIMARY KEY("app_name","app_version","app_platform")
-);
-                   """)
+
+    cursor.execute(f"""
+            CREATE TABLE IF NOT EXISTS {product_table_name} (
+            "app_name"	TEXT NOT NULL,
+            "full_name"	TEXT NOT NULL,
+            "default_download"	TEXT,
+            PRIMARY KEY("app_name")
+            );
+            """)
+
     connection.commit()
+    cursor.execute("""
+                       CREATE TABLE IF NOT EXISTS """ + sqlite_table_name + """(
+        "app_name"	TEXT NOT NULL,
+        "app_version"	TEXT NOT NULL,
+        "app_platform"	TEXT NOT NULL,
+        "url_bin"	TEXT NOT NULL,
+        "hash_type"	TEXT,
+        "hash_res"	TEXT,
+        "sig_type"	TEXT,
+        "sig_res"	TEXT,
+        "url_pub_key"	TEXT,
+        "last_found"	TEXT NOT NULL,
+        "last_download"	TEXT,
+        "verified_version"	TEXT,
+        PRIMARY KEY("app_name","app_version","app_platform"),
+        FOREIGN KEY (app_name) REFERENCES """+product_table_name+"""(app_name)
+        );
+    """)
+
+def add_product(app_name, full_name,default_download):
+    connection = sqlite3.connect(sqlite_db_file)
+    cursor = connection.cursor()
+    query = f"""
+            INSERT INTO {product_table_name} (app_name, full_name, default_download)
+            SELECT ?, ?, ?
+            WHERE NOT EXISTS (
+                SELECT app_name FROM {product_table_name} WHERE app_name = ?
+            )
+        """
+
+    cursor.execute(query, (app_name, full_name, default_download, app_name))
+    connection.commit()
+    connection.close()
 
 
 def append_software(list_software_dict):
+    connection = sqlite3.connect(sqlite_db_file)
+    cursor = connection.cursor()
+
     for software in list_software_dict:
         app_name = software['app_name']
+        add_product(app_name, software['full_name'], software['default_download'])
         app_version = software['app_version']
         last_found = software['last_found']
         last_download = software['last_download']
         for download in software['downloads']:
-            connection = sqlite3.connect(sqlite_db_file)
-            cursor = connection.cursor()
-            # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
-            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?",
-                           (app_name, download['app_platform']))
-            entry = cursor.fetchall()
 
+            # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
+            cursor.execute("SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=? AND app_version=?",
+                           (app_name, download['app_platform'], app_version))
+            entry = cursor.fetchall()
             if entry and entry[0][0] == app_version:
                 print(f"App {app_name} in version {app_version} already exists.")
                 continue

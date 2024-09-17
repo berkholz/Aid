@@ -6,6 +6,10 @@ import requests
 
 download_url = 'https://www.7-zip.org/download.html'
 app_name = "7zip".lower()
+full_name = "7zip"
+default_download = 'win64'
+
+
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 app_version = 0
 
@@ -28,10 +32,12 @@ def getWebSite():
 def toJSON(d):
     json_result = {
         "app_name": app_name,
+        "full_name": full_name,
+        "default_download": default_download,
         "app_version": app_version,
         "downloads": d,
         "last_found": date.today().isoformat(),
-        "last_download": "0000-00-00"
+        "last_download": "0000-00-00",
     }
     return json_result
 

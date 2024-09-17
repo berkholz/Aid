@@ -1,3 +1,5 @@
+import math
+import os
 import threading
 import tkinter as tk
 from idlelib.searchengine import get_selection
@@ -6,9 +8,14 @@ from tkinter.messagebox import showinfo
 
 import Db.database
 from Db.database import get_available_software
+from GUI.loading_animation import LoadingAnimation
 from download.downloader import download_gui, download
 from download.verify import verify_downloads
 from package.packager import package
+from Crawler import crawler
+from PIL import Image, ImageTk
+
+
 
 
 class ProgramTable(tk.Frame):
@@ -16,9 +23,16 @@ class ProgramTable(tk.Frame):
         super().__init__(master)
         self.master = master
         self.master.title("AID -- automated internet downloader")
+
+        self.loading_animation = LoadingAnimation(self.master)
+
+
+
         self.create_widgets()
 
+
     def create_widgets(self):
+        self.loading_animation.start()
         self.table_frame = ttk.Frame(self.master)
         self.table_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
@@ -55,12 +69,19 @@ class ProgramTable(tk.Frame):
 
 
         self.tree.bind("<Button-1>", self.on_click)
+
+
         self.download_button = ttk.Button(self.master, text="download and pack selected", command=self.process_clicked)
         self.download_button.pack(pady=10)
 
-        self.load_data()
+        threading.Thread(target=self.load_data).start()
 
     def load_data(self):
+
+        application_links = crawler.getApplications("Crawler")
+
+        Db.database.init_db()
+        Db.database.append_software(application_links)
 
         programs = Db.database.get_available_software()
 
@@ -86,6 +107,8 @@ class ProgramTable(tk.Frame):
         self.tree.tag_configure('program', background='lightblue')
         self.tree.tag_configure('version', background='white')
         self.tree.tag_configure('separator', background='lightgray')
+
+        self.loading_animation.stop()
 
     def on_click(self, event):
         region = self.tree.identify("region", event.x, event.y)
