@@ -5,7 +5,7 @@ from datetime import datetime
 
 import gnupg
 
-from Db.database import get_verified_version,sqlite_db_file
+from Db.database import sqlite_db_file
 from download.utils import DOWNLOAD_PATH
 
 

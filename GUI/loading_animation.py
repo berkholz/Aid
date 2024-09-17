@@ -7,23 +7,23 @@ class LoadingAnimation:
         self.label.place(relx=0.5, rely=0.5, anchor='center')  # Center the label
         self.running = False
 
-    def animate(self):
+    def animate(self,message):
         if self.running:
             current_text = self.label['text']
-            if current_text == "Loading .":
-                self.label['text'] = "Loading .."
-            elif current_text == "Loading ..":
-                self.label['text'] = "Loading ..."
+            if current_text == f"{message} .":
+                self.label['text'] = f"{message} .."
+            elif current_text == f"{message} ..":
+                self.label['text'] = f"{message} ..."
             else:
-                self.label['text'] = "Loading ."
-            self.master.after(500, self.animate)
+                self.label['text'] = f"{message} ."
+            self.master.after(500, self.animate, message)
 
-    def start(self):
+    def start(self,message='Loading'):
         if not self.running:
             self.running = True
             self.label.place(relx=0.5, rely=0.5, anchor='center')  # Make the label visible
             self.master.after(100, lambda: self.label.lift())  # Lift the label after a short delay
-            self.animate()
+            self.animate(message)
 
     def stop(self):
         self.running = False
