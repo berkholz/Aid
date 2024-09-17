@@ -123,7 +123,7 @@ def get_checksum_link(platform, app_name, version):
 
 
 def get_available_software():
-    """returns all available softwarea and generates a dictionary for table view"""
+    """returns all available software and generates a dictionary for table view"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
@@ -157,7 +157,7 @@ def get_available_software():
                 version_data[platform] = True if platform in default and last_found == max_last_found else False
                 break
 
-        # When not existant add version to list
+        # When not existent add version to list
         if not version_exists:
             version_data = {
                 'version': app_version,
