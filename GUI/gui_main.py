@@ -1,3 +1,4 @@
+import concurrent.futures
 import math
 import os
 import threading
@@ -132,16 +133,22 @@ class ProgramTable(tk.Frame):
 
     def download(self, app_list, pkg_name):
         download_gui(app_list)
-        thread = threading.Thread(target=package, args=(app_list, pkg_name))
-        thread.start()
-        thread.join()
-        showinfo("Done", "package created")
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(package, app_list, pkg_name)
+            path = future.result()
+
+        self.loading_animation.stop()
+
+        os.startfile(path)
+
 
     def process_clicked(self):
         print("download clicked")
         app_list, pkg_name = self.get_selected()
+        self.loading_animation.start("creating package")
         thread = threading.Thread(target=self.download, args=(app_list, pkg_name)).start()
-        showinfo("Process started", "started downloading and packaging process")
+
 
     def get_selected(self):
         selected_versions = []

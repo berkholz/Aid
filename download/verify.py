@@ -6,7 +6,7 @@ import gnupg
 import requests
 from tqdm import tqdm
 
-from Db.database import get_checksum_link, get_sw_list_for_platform, set_verified_version, get_software_link
+from Db.database import get_checksum_link, get_sw_list_for_platform, get_software_link
 from download.utils import *
 
 
@@ -57,7 +57,6 @@ def verify(path):
     if hash_verify_status == False or sig_verify_status == False:
         return False
     else:
-        set_verified_version(software,platform,software_version)
         return True
 
 

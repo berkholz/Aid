@@ -2,6 +2,8 @@ import os.path
 import sqlite3
 from platform import platform
 
+from clint.textui.prompt import query
+
 ### CONFIGURATION
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # print(cwd_dir)
@@ -120,15 +122,26 @@ def get_checksum_link(platform, app_name, version):
 def get_available_software():
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
-    cursor.execute(
-        f"SELECT app_name, app_version, app_platform FROM {sqlite_table_name};"
-    )
+    query = f"""
+    SELECT app_name, app_version, app_platform, last_found,
+           (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
+    FROM {sqlite_table_name} t1;
+"""
+
+    cursor.execute(query)
 
     program_data = {}
 
     for row in cursor.fetchall():
-        app_name, app_version, app_platform = row
+        app_name, app_version, app_platform, last_found, max_last_found = row
         platform = app_platform
+
+        connection2 = sqlite3.connect(sqlite_db_file)
+        cursor2 = connection2.cursor()
+        query2 = "SELECT default_download FROM "+product_table_name+" WHERE app_name = ?"
+        cursor2.execute(query2, (app_name,))
+        default = cursor2.fetchone()[0]
+
 
         if app_name not in program_data:
             program_data[app_name] = []
@@ -138,16 +151,16 @@ def get_available_software():
         for version_data in program_data[app_name]:
             if version_data['version'] == app_version:
                 version_exists = True
-                version_data[platform] = False
+                version_data[platform] = True if platform in default and last_found==max_last_found else False
                 break
 
         # When not existant add version to list
         if not version_exists:
             version_data = {
                 'version': app_version,
-                'win64': False if platform == 'win64' else None,
-                'linux': False if platform == 'linux' else None,
-                'android': False if platform == 'android' else None
+                'win64': None if platform != 'win64' else (True if 'win64' in default and last_found==max_last_found else False),
+                'linux':  None if platform != 'linux' else (True if 'linux' in default and last_found==max_last_found else False),
+                'android':  None if platform != 'android' else (True if 'android' in default and last_found==max_last_found else False)
             }
             program_data[app_name].append(version_data)
 
@@ -165,31 +178,6 @@ def get_sw_list_for_platform(platform):
     for entry in entries:
         ret_sw.append(entry[0])
     return ret_sw
-
-
-def set_verified_version(software, platform, version):
-    connection = sqlite3.connect(sqlite_db_file)
-    cursor = connection.cursor()
-    cursor.execute(
-        "UPDATE " + sqlite_table_name + " SET verified_version=? WHERE app_name=? AND app_platform=?",
-        (version, software, platform)
-    )
-    connection.commit()
-    connection.close()
-
-
-def get_verified_version(software, platform):
-    connection = sqlite3.connect(sqlite_db_file)
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT verified_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=?",
-        (software, platform)
-    )
-    entry = cursor.fetchone()
-    if entry:
-        return entry[0]
-    else:
-        return None
 
 
 def insert_dummy_data():

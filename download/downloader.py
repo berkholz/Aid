@@ -9,7 +9,7 @@ from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
 import Db.database as db
-from Db.database import get_sw_list_for_platform, set_verified_version, get_verified_version, get_software_link
+from Db.database import get_sw_list_for_platform, get_software_link
 from download.utils import *
 from download.verify import verify
 
@@ -37,7 +37,6 @@ def download_sw(software, app_platfom, version, path):
         os.makedirs(downl_dir, exist_ok=True)
     sv_path = downl_dir + software + "-" + version + "." + extension
 
-    verified_version = get_verified_version(software, app_platfom)
 
     if os.path.exists(sv_path):
         res = verify(sv_path)
