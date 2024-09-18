@@ -3,11 +3,12 @@ import hashlib
 
 import gnupg
 
-def verify_pkg_path(path):
-    files = os.listdir(path)
+def verify_pkg_path(pkg_path):
+    """index files in pkg to start verification"""
+    files = os.listdir(pkg_path)
     filenames = [file for file in files if file not in ['sha256sum.txt', 'sha256sum.txt.asc']]
 
-    result = verify_sha256_checksums(path, filenames)
+    result = verify_sha256_checksums(pkg_path, filenames)
     return result
 
 def calculate_sha256(filename):
@@ -19,12 +20,12 @@ def calculate_sha256(filename):
     return sha256_hash.hexdigest()
 
 
-def verify_sha256_checksums(path, filenames):
+def verify_sha256_checksums(pkg_path, filenames):
     """verifies the sha256 hash of a file using the sha256.txt file"""
-    sums_file = os.path.join(path, "sha256sum.txt")
+    sums_file = os.path.join(pkg_path, "sha256sum.txt")
 
     # Verify GPG signature first
-    signature_result = verify_gpg_signature(path)
+    signature_result = verify_gpg_signature(pkg_path)
     if "Error" in signature_result:
         return signature_result
 
@@ -38,7 +39,7 @@ def verify_sha256_checksums(path, filenames):
 
     # Verify checksums for each file
     for filename in filenames:
-        full_path = os.path.join(path, filename)
+        full_path = os.path.join(pkg_path, filename)
         try:
             calculated_checksum = calculate_sha256(full_path)
         except FileNotFoundError:
@@ -53,11 +54,11 @@ def verify_sha256_checksums(path, filenames):
     return "All checksums verified successfully"
 
 
-def verify_gpg_signature(path):
+def verify_gpg_signature(pkg_path):
     """verifies the gpg signature of our sha256sum.txt file"""
     gpg = gnupg.GPG()
-    signature_file = os.path.join(path, "sha256sum.txt.asc")
-    sums_file = os.path.join(path, "sha256sum.txt")
+    signature_file = os.path.join(pkg_path, "sha256sum.txt.asc")
+    sums_file = os.path.join(pkg_path, "sha256sum.txt")
 
     if not os.path.isfile(signature_file):
         return "Error: GPG signature file (sha256sum.txt.asc) not found"
@@ -72,6 +73,6 @@ def verify_gpg_signature(path):
 
 
 if __name__ == "__main__":
-    path = "C:/Users/bdbos-adm29/Desktop/tmp_package/AID_PACKAGE-24_09_17-blupp/"
+    path = "C:/Users/bdbos-adm29/Desktop/tmp_package/AID_PACKAGE-24_09_18-Mittwoch"
 
     print(verify_pkg_path(path))
