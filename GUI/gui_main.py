@@ -1,8 +1,10 @@
 import concurrent.futures
 import os
+import queue
+import sys
 import threading
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, scrolledtext
 
 import Db.database
 from GUI.loading_animation import LoadingAnimation
@@ -18,15 +20,14 @@ class ProgramTable(tk.Frame):
         self.master.title("AID -- automated internet downloader")
 
         self.loading_animation = LoadingAnimation(self.master)
-
-
-
+        self.logger_window = LoggerWindow(root)
         self.create_widgets()
 
 
     def create_widgets(self):
         """creates the version table view"""
         self.loading_animation.start()
+        self.logger_window.open()
         self.table_frame = ttk.Frame(self.master)
         self.table_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
@@ -104,6 +105,7 @@ class ProgramTable(tk.Frame):
         self.tree.tag_configure('separator', background='lightgray')
 
         self.loading_animation.stop()
+        self.logger_window.close()
 
     def on_click(self, event):
         """Handles checkbox click"""
@@ -166,6 +168,54 @@ class ProgramTable(tk.Frame):
 
         pkg_name = self.pkg_name.get()
         return selected_versions,pkg_name
+
+
+
+
+class LoggerWindow:
+    def __init__(self, master):
+        self.master = master
+        self.window = None
+        self.log_queue = queue.Queue()
+        self.is_open = False
+
+    def open(self):
+        if not self.is_open:
+            self.window = tk.Toplevel(self.master)
+            self.window.title("Logger Window")
+            self.window.geometry("600x400")
+
+            self.text_widget = scrolledtext.ScrolledText(self.window, wrap=tk.WORD)
+            self.text_widget.pack(expand=True, fill='both')
+
+            self.window.protocol("WM_DELETE_WINDOW", self.close)
+
+            sys.stdout = self
+            sys.stderr = self
+
+            self.is_open = True
+            self.check_queue()
+
+    def close(self):
+        if self.is_open:
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            self.window.destroy()
+            self.is_open = False
+
+    def write(self, message):
+        self.log_queue.put(message)
+
+    def flush(self):
+        pass
+
+    def check_queue(self):
+        while not self.log_queue.empty():
+            message = self.log_queue.get()
+            self.text_widget.insert(tk.END, message)
+            self.text_widget.see(tk.END)
+        if self.is_open:
+            self.window.after(100, self.check_queue)
 
 
 if __name__ == "__main__":
