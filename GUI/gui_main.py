@@ -1,23 +1,14 @@
 import concurrent.futures
-import math
 import os
 import threading
 import tkinter as tk
-from idlelib.searchengine import get_selection
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 
 import Db.database
-from Db.database import get_available_software
 from GUI.loading_animation import LoadingAnimation
-from download.downloader import download_gui, download
-from download.verify import verify_downloads
+from download.downloader import download_gui
 from package.packager import package
 from Crawler import crawler
-from PIL import Image, ImageTk
-
-
-
 
 class ProgramTable(tk.Frame):
     """Main Frame for the control of AID"""
