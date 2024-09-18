@@ -182,7 +182,8 @@ def verify_signature(file_path, res):
         with open(signature_filename, 'rb') as sig_file:
             verified = gpg.verify_file(sig_file, file_path)
 
-        os.remove(signature_filename)
+        if os.path.exists(signature_filename):
+            os.remove(signature_filename)
         if checking_hash:
             os.remove(hash_filename)
 

@@ -36,7 +36,8 @@ def download_sw(software, app_platfom, version, path):
             tqdm.write(f'verified download: {software} version: {version}')
             return
         else:
-            tqdm.write('unverifiable Download found')
+            tqdm.write('unverifiable Download found,')
+
 
     tqdm.write(f"Starting download of {software}, version {version}...")
     load = requests.get(link, timeout=300, stream=True)
@@ -64,12 +65,13 @@ def download_sw(software, app_platfom, version, path):
 
     tqdm.write(f'Downloaded {software} in version {version}: {sv_path}.')
     tqdm.write(f'staring verification of {software}')
-    result = verify(sv_path)
-    if not result:
-        tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
-        os.remove(sv_path)
-    else:
-        tqdm.write(f'verification successful.')
+    if os.path.exists(sv_path):
+        result = verify(sv_path)
+        if not result:
+            tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
+            os.remove(sv_path)
+        else:
+            tqdm.write(f'verification successful.')
 
 
 def download(platform, sw_list=[]):
