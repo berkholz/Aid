@@ -1,0 +1,43 @@
+@startuml
+    participant "Main/GUI"
+    participant Crawler
+    participant Database
+    participant Downloader
+    participant Verifier
+    participant Packager
+
+    "Main/GUI"->>Crawler: getApplications()
+    Crawler-->>"Main/GUI": application_links
+
+    "Main/GUI"->>Database: init_db()
+    "Main/GUI"->>Database: append_software(application_links)
+
+    "Main/GUI"->>Database: get_available_software()
+    Database-->>"Main/GUI": sw_list
+    "Main/GUI"->>"Main/GUI": software selection
+    "Main/GUI"->Downloader: download_gui(selected software)
+
+    loop For each software in sw_list
+        Downloader->>Downloader: download_sw(software, platform, version, path)
+        Downloader->>Database: get_software_link(software, platform, version)
+        Database-->>Downloader: link
+        Downloader->>Downloader: Download file
+        Downloader->>Verifier: verify(sv_path)
+        Verifier->>Database: get_checksum_link(platform, software, version)
+        Database-->>Verifier: checksum_data
+        Verifier->>Verifier: verify_hash()
+        Verifier->>Verifier: verify_signature()
+        Verifier-->>Downloader: verification result
+        alt Verification failed
+            Downloader->>Downloader: Delete downloaded file
+        end
+        Downloader-->"Main/GUI": verification result
+    end
+
+    "Main/GUI"->>Packager: package(sw_list, package_name)
+    Packager->>Packager: collect_software(sw_list, dest_path)
+    Packager->>Packager: insert_db(path)
+    Packager->>Packager: generate_sums(path)
+    Packager-->>"Main/GUI": package_path
+    "Main/GUI"->"Main/GUI": opens path in explorer
+@enduml
