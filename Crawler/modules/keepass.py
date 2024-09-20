@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import urllib
 from datetime import date
-#from Crawler.sourceforge_direct_url_helper import get_direct_url
 
 download_url = 'https://keepass.info/download.html'
 integrity_url= 'https://keepass.info/integrity.html'
