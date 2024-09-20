@@ -73,6 +73,6 @@ def verify_gpg_signature(pkg_path):
 
 
 if __name__ == "__main__":
-    path = "C:/Users/***REMOVED***/Desktop/tmp_package/AID_PACKAGE-24_09_18-Mittwoch"
+    path = "C:/Users/bdbos-adm29/Desktop/tmp_package/AID_PACKAGE-24_09_18-Mittwoch"
 
     print(verify_pkg_path(path))

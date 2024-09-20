@@ -8,7 +8,8 @@ import gnupg
 from Db.database import sqlite_db_file
 from download.utils import DOWNLOAD_PATH
 
-PACKAGE_PATH = 'C:/Users/***REMOVED***/Desktop/tmp_package/'
+# TODO: choose folder of os specific paths
+PACKAGE_PATH = './tmp_package/'
 PACKAGE_NAME_PATTERN = 'AID_PACKAGE-{}-{}/'
 
 download_path = DOWNLOAD_PATH
