@@ -73,8 +73,8 @@ def generate_sums(path):
                 f.write(f'{temp_hash.hexdigest()}  {filename}\n')
                 f.close()
 
-    with open(hash_file, 'rb') as f:
-        signed = gpg.sign_file(f, detach=True, output=f'{hash_file}.asc')
+    # with open(hash_file, 'rb') as f:
+    #     signed = gpg.sign_file(f, detach=True, output=f'{hash_file}.asc')
 
     print('generated sha256 sums and signature')
 
