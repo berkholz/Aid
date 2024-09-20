@@ -6,8 +6,6 @@ from Db.database import get_sw_list_for_platform, get_software_link
 from download.utils import *
 from download.verify import verify
 
-
-
 def path_init():
     """initializes the download-folder"""
     if not os.path.exists(DOWNLOAD_PATH):
