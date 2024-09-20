@@ -4,8 +4,6 @@ import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
 
-from Crawler.modules.stunnel import base_url, app_name
-
 app_name = "firefox_esr"
 full_name = "Firefox ESR"
 default_download = 'win64'
