@@ -53,6 +53,7 @@ def generate_sums(path):
     """generates sha256 checksum for every file in path and signs the checksum file afterward"""
     hash_file = path + 'sha256sum.txt'
 
+    # check if checksum file exists and delete it from filesystems
     for filename in os.listdir(path):
         if 'sha256sum.txt' in filename:
             os.remove(os.path.join(path, filename))
