@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import urllib
 from datetime import date
-from Crawler.sourceforge_direct_url_helper import get_direct_url
+#from Crawler.sourceforge_direct_url_helper import get_direct_url
 
 download_url = 'https://keepass.info/download.html'
 integrity_url= 'https://keepass.info/integrity.html'
@@ -14,6 +14,20 @@ default_download = 'win64'
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 
 
+def getWebSite(url):
+    """returns website as bs4 object"""
+    # creating request with custom user agent string
+    response = requests.get(url, allow_redirects=False).text
+    return BeautifulSoup(response, 'html.parser')
+
+
+def get_direct_url(url):
+    """selects direct download url from sourceforge sites"""
+    site = getWebSite(url)
+    link = site.find('a', href=True)['href']
+    return link
+
+
 def findPlatformInURL(platform, url):
     if url.find(platform) > 0 and url.find('.asc') < 1 and url.find('sha256') < 1:
         return url
@@ -21,13 +35,6 @@ def findPlatformInURL(platform, url):
 
 def isBinaryURL(ref, platform_string):
     return ref['href'].find(platform_string) > 0 and ref['href'].find('.asc') < 1 and ref['href'].find('sha256') < 1
-
-
-def getWebSite(url):
-    # creating request with custom user agent string
-    response = requests.get(url).text
-    return BeautifulSoup(response, 'html.parser')
-
 
 def toJSON(d):
 

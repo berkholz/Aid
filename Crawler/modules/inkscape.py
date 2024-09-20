@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
-from Crawler import sourceforge_direct_url_helper
-from Crawler.sourceforge_direct_url_helper import get_direct_url
 
 MAX_ITER = 5
 download_url = 'https://inkscape.org/release/'
@@ -13,6 +11,11 @@ full_name = "Inkscape"
 default_download = 'win64'
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 
+def get_direct_url(url):
+    """selects direct download url from sourceforge sites"""
+    site = getWebSite(url)
+    link = site.find('a', href=True)['href']
+    return link
 
 def findPlatformInURL(platform, url):
     if url.find(platform) > 0 and url.find('.asc') <1 and url.find('sha256') <1:
@@ -22,6 +25,7 @@ def isBinaryURL(ref, platform_string):
     return ref.find(platform_string) > 0 and ref.find('.asc') <1 and ref.find('sha256') <1
 
 def getWebSite(url):
+    """returns website as bs4 object"""
     # creating request with custom user agent string
     response = requests.get(url).text
     return BeautifulSoup(response, 'html.parser')
