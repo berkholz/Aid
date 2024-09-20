@@ -1,10 +1,11 @@
 import concurrent.futures
 import os
 import queue
+import subprocess, platform
 import sys
 import threading
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk, scrolledtext, messagebox
 
 import Db.database
 from GUI.loading_animation import LoadingAnimation
@@ -138,8 +139,12 @@ class ProgramTable(tk.Frame):
             path = future.result()
 
         self.loading_animation.stop()
-
-        os.startfile(path)
+        messagebox.showinfo("completed","Packaging Completed")
+        # if platform.system() == "Windows":
+        #     os.startfile(path)
+        # else:
+        #     opener = "open" if sys.platform == "darwin" else "xdg-open"
+        #     subprocess.call([opener, path])
 
 
     def process_clicked(self):
@@ -168,9 +173,6 @@ class ProgramTable(tk.Frame):
 
         pkg_name = self.pkg_name.get()
         return selected_versions,pkg_name
-
-
-
 
 class LoggerWindow:
     def __init__(self, master):
