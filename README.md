@@ -25,3 +25,10 @@ The Packager component creates a signed package with all selected downloaded sof
 
 ## Manager
 This component manages all components. Here you can select the packages to download or select the software for package creation.
+
+## Prequisites
+THe following packes have to be installed on Ubuntu 22.04.5 LTS:
+* python3-tk
+* python-tk
+* python3-tqdm
+* python3-gnupg
