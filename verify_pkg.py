@@ -74,5 +74,4 @@ def verify_gpg_signature(pkg_path):
 
 if __name__ == "__main__":
     path = "./tmp_package/"
-
     print(verify_pkg_path(path))
