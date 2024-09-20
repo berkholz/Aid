@@ -7,6 +7,7 @@ from download.utils import *
 from download.verify import verify
 
 
+
 def path_init():
     """initializes the download-folder"""
     if not os.path.exists(DOWNLOAD_PATH):
@@ -53,8 +54,8 @@ def download_sw(software, app_platfom, version, path):
                 position=0,
                 leave=True,
                 dynamic_ncols=True,
-                colour='blue',
-                text_colour='blue',
+                # colour='blue',
+                # text_colour='blue',
         ) as bar:
             for data in load.iter_content(chunk_size=1024):
                 size = file.write(data)
