@@ -9,7 +9,7 @@ from Downloader.utils import *
 
 
 def verify_downloads(platform, sw_list=[]):
-    """methode initiates checksum and signature verification for given software list"""
+    """method initiates checksum and signature verification for given software list"""
     # when software list is empty, we take all available software for our platform
     if len(sw_list) == 0:
         sw_list = get_sw_list_for_platform(platform)
