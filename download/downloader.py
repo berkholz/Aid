@@ -5,6 +5,7 @@ from tqdm.contrib.concurrent import thread_map
 from Db.database import get_sw_list_for_platform, get_software_link
 from download.utils import *
 from download.verify import verify
+import urllib.parse # for parsing download url
 
 def path_init():
     """initializes the download-folder"""
@@ -19,6 +20,11 @@ def download_sw(software, app_platfom, version, path):
 
     # print (link)
     extension = link.split('?')[0].split('.')[-1]
+    parsed_url = urllib.parse.urlsplit(link)
+    quoted_file_name = str(parsed_url.path).split('/')[-1]
+    # remove url special quoting characters, e.g. %20
+    file_name = urllib.parse.unquote(quoted_file_name, encoding='utf-8', errors='replace')
+
 
     if link.split('?')[0].split('.')[-2] == 'tar':
         extension = 'tar.' + extension
@@ -27,7 +33,7 @@ def download_sw(software, app_platfom, version, path):
 
     if not os.path.exists(downl_dir):
         os.makedirs(downl_dir, exist_ok=True)
-    sv_path = downl_dir + software + "-" + version + "." + extension
+    sv_path = downl_dir + file_name
 
     if os.path.exists(sv_path):
         res = verify(sv_path)
