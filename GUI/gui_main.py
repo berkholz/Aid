@@ -8,7 +8,7 @@ from tkinter import ttk, scrolledtext
 
 import Db.database
 from GUI.loading_animation import LoadingAnimation
-from download.downloader import download_gui
+from Downloader.downloader import download_gui
 from package.packager import package
 from Crawler import crawler
 

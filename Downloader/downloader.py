@@ -3,8 +3,8 @@ from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
 from Db.database import get_sw_list_for_platform, get_software_link
-from download.utils import *
-from download.verify import verify
+from Downloader.utils import *
+from Downloader.verify import verify
 import urllib.parse # for parsing download url
 
 def path_init():

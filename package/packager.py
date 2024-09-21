@@ -6,7 +6,7 @@ from datetime import datetime
 import gnupg
 
 from Db.database import sqlite_db_file
-from download.utils import DOWNLOAD_PATH
+from Downloader.utils import DOWNLOAD_PATH
 
 # TODO: choose folder of os specific paths
 PACKAGE_PATH = './tmp_package/'

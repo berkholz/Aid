@@ -5,7 +5,7 @@ import requests
 from tqdm import tqdm
 
 from Db.database import get_checksum_link, get_sw_list_for_platform, get_software_link
-from download.utils import *
+from Downloader.utils import *
 
 
 def verify_downloads(platform, sw_list=[]):
