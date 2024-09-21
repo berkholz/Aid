@@ -87,7 +87,7 @@ def download(platform, sw_list=[]):
 
     for f in sw_list:
         download_sw(f, platform, DOWNLOAD_PATH)
-    return DOWNLOAD_PATH + '/'
+    return DOWNLOAD_PATH
 
 
 def download_gui(sw_list):
