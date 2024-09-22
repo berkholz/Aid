@@ -9,7 +9,7 @@ The following sequence diagram show the process of Crawlers components:
 ```
 @startuml
 participant "Other Component"
-participant Crawler
+participant Crawler #darkblue
 
 box  "Modules"
 participant Module_Dir
