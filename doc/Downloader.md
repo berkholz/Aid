@@ -4,8 +4,8 @@ The Downloader component is responsible for downloading the software packages.
 
 ![sequence diagram of component Downloader](https://www.plantuml.com/plantuml/dpng/dPDFhXen3CRtEOMbhdk1BgfN5LfLUekgvHt09Cx3mfCWsm7HqtSOgZ0WWL2NaD_tPxxCl9YZUXiaX1sgS-GT5eV5-lfdFHIfc4ZXGqBThgNH5V2ZE6aXl_hp6mlPqPo646OE7p_FJk0JS65dH-4_1EaV1ecLebSztYWNwr7nU_cw_Bg2jr-l1hage0XOpNv0fJ0I9wwhHbx9cvRETxR7MGXIwmxOIT49wfucrqaIOEvswnqt5BV06J8B0Tj9feJfsCqftJhqkKRzz-MgavTYMUjm2W_GsNjFrJLSp544dMk17SOjljEeVx2yuVwomOZUdxgfJCjjq3PWRHZX-plVmb3pfMMimwuMAlwusfwKysL3EB1lkk5vdeIEQpHwghZnUq5lIayrx_H_bEpQPrg-_LnyMIqxD8KBcizUdjCX0MT0aNCYn_CTMukHpCW2bVJm4rF2DBVCB7Hzd-5-kRxw7gLDicur6OMNCRuDyXS0)
 
-´´´
-@startuml
+
+```@startuml
 
 participant Db
 participant Downloader #darkblue
@@ -34,4 +34,4 @@ Downloader -> Filesystem : read downloaded file for hash sum
 
 Downloader -> Db : UPDATE hash sum value for download file
 @enduml
-´´´
+```
