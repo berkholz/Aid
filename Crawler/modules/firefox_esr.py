@@ -30,7 +30,6 @@ def getWebSite():
 
 
 def toJSON(d):
-
     json_result = {
         "app_name": app_name,
         "full_name": full_name,
