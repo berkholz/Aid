@@ -8,8 +8,8 @@ import json
 api_url = 'https://rdc.adobe.io/reader/products?lang={lang}&site=enterprise&os={os}&preInstalled=&country=DE&nativeOs={os}&api_key=dc-get-adobereader-cdn'
 api_link_url = 'https://rdc.adobe.io/reader/downloadUrl?name={name}&nativeOs={os}&os={os}&site=enterprise&lang={lang}&country={country}&api_key=dc-get-adobereader-cdn'
 
-app_name = "adobe_enterprise".lower()
-full_name = "Adobe Reader Enterprise"
+app_name = "adobe".lower()
+full_name = "Adobe Reader"
 default_download = 'win64'
 
 def findPlatformInURL(platform, url):
