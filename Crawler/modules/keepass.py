@@ -36,7 +36,6 @@ def isBinaryURL(ref, platform_string):
     return ref['href'].find(platform_string) > 0 and ref['href'].find('.asc') < 1 and ref['href'].find('sha256') < 1
 
 def toJSON(d):
-
     json_result = {
         "app_name": app_name,
         "full_name": full_name,
