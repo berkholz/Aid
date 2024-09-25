@@ -130,7 +130,7 @@ def get_available_software():
     SELECT app_name, app_version, app_platform, last_found,
            (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
     FROM {sqlite_table_name} t1;
-"""
+    """
 
     cursor.execute(query)
 
