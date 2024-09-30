@@ -21,7 +21,7 @@ def verify_downloads(platform, sw_list=[]):
         app_version = sw['version']
 
         # gets download link from db to get path and filename on system
-        link = get_software_link(app_name, app_platform, app_version)
+        link = get_url_bin(app_name, app_platform, app_version)
 
         extension = link.split('?')[0].split('.')[-1]
 
