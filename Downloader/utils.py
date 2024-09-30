@@ -8,5 +8,5 @@ DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
 
 def get_newest_link(software, platform):
     """database request for download-link of newest version"""
-    link = db.get_software_link(software.lower(), platform.lower())
+    link = db.get_url_bin(software.lower(), platform.lower())
     return link
