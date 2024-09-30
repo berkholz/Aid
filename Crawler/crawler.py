@@ -2,14 +2,20 @@ import os
 import glob
 from importlib import import_module
 import importlib
+import logging
+import settings
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 
 all_list = list()
 json_list = list()
 
-### BASIC configuration
 module_path = "modules"
 
 
+################################### FUNCTIONS
 def getApplications(relative_path=''):
     # iterate over all mpython files in directory crawler_configuration.module_path
     for f in glob.glob(os.path.dirname(__file__) + "/" + module_path + "/*.py"):
@@ -20,7 +26,7 @@ def getApplications(relative_path=''):
 
     # iterate over all modules
     for mymodule in __all__:
-        print("checking {module} for downloads.".format(module=mymodule))
+        LOGGER.info("checking {module} for downloads.".format(module=mymodule))
         # import module
         if __name__ == '__main__':
             # we call the crawler.py directly, so we import without the __package__

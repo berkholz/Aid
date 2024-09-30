@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import urllib
 from datetime import date
 import requests
+import logging
+import settings
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 
 download_url = 'https://www.7-zip.org/download.html'
 app_name = "7zip".lower()
@@ -13,7 +19,7 @@ default_download = 'win64'
 base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
 app_version = 0
 
-
+################################### FUNCTIONS
 def findPlatformInURL(platform, url):
     if url.find(platform) > 0 and url.find('.asc') < 1 and url.find('sha256') < 1:
         return url

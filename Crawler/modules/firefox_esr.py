@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
+import logging # for logging output
+import settings # import for global settings
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 
 app_name = "firefox_esr"
 full_name = "Firefox ESR"

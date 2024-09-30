@@ -4,10 +4,17 @@ import gnupg
 import requests
 from tqdm import tqdm
 
-from Db.database import get_checksum_link, get_sw_list_for_platform, get_software_link
+from Db.database import * # get_checksum_link, get_sw_list_for_platform, get_url_bin
 from Downloader.utils import *
+import logging # import lib for LOGGING
+import settings # import global settings
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 
 
+################################### FUNCTIONS
 def verify_downloads(platform, sw_list=[]):
     """method initiates checksum and signature verification for given software list"""
     # when software list is empty, we take all available software for our platform
@@ -42,6 +49,7 @@ def verify_downloads(platform, sw_list=[]):
 
 def verify(path):
     """initiates verification for a specific file"""
+    LOGGER.info("Entering verify...")
     file_name = path.split('/')[-1]
     platform = path.split('/')[-2].split('-')[0]
     software = file_name.split('-')[0]
@@ -52,6 +60,7 @@ def verify(path):
 
     # we get our verification source
     res = get_checksum_link(platform, software, software_version)
+    LOGGER.info("checksum link: " + str(res))
     if res is None:
         tqdm.write(f'software {software} version {software_version} not found in database')
         return False

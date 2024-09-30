@@ -6,11 +6,27 @@ import os
 # from Downloader.utils import *
 from Downloader.verify import verify
 import urllib.parse # for parsing download url
+import logging
+import settings
 
-def path_init():
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
+
+cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
+
+
+################################### FUNCTIONS
+def initialize_download_directory():
     """initializes the download-folder"""
+    LOGGER.info("Checking if download directory exists.")
     if not os.path.exists(DOWNLOAD_PATH):
+        LOGGER.info("Download directory does not exist, creating.")
         os.makedirs(DOWNLOAD_PATH)
+        LOGGER.info("Download directory " + DOWNLOAD_PATH + " created.")
+    else:
+        LOGGER.info("Download directory " + DOWNLOAD_PATH + " allready created.")
 
 def get_software(link, base_path, software, version, platform):
     """downloads single software"""

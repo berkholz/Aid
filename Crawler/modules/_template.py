@@ -2,6 +2,12 @@ import urllib.request
 from bs4 import BeautifulSoup
 import urllib
 from datetime import date
+import logging # import lib for LOGGING
+import settings # import global settings
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 
 download_url = 'https://www.url2download.com/downloads.html'
 app_name = "example_app".lower()
@@ -11,6 +17,8 @@ default_download = 'win64'
 base_url = download_url.split('/')[0] + download_url.split('/')[1] + download_url.split('/')[2]
 app_version = 0
 
+
+################################### FUNCTIONS
 
 def findPlatformInURL(platform, url):
     if url.find(platform) > 0 and url.find('.asc') <1 and url.find('sha256') <1:

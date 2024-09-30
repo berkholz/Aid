@@ -1,14 +1,19 @@
 import os.path
 import sqlite3
+import logging # import lib for LOGGING
+import settings # import global settings
 
-### CONFIGURATION
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# print(cwd_dir)
-sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
-# print(sqlite_db_file)
-sqlite_table_name = "software"
-product_table_name = "products"
+LOGGER.info(" current workoing dir: " + cwd_dir)
 
+sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
+sqlite_table_name = "software"
+# product_table_name = "products"
+
+################################### FUNCTIONS
 
 def init_db():
     """Inititalize the database schema"""
@@ -59,9 +64,7 @@ def append_software(list_software_dict):
             entry = cursor.fetchall()
 
             if entry and entry[0][0] == app_version:
-                print(f"App {app_name} in version {app_version} already exists.")
-                continue
-
+                LOGGER.info(f"App {app_name} in version {app_version} already exists, skipping.")
             else:
                 LOGGER.info(f"Inserting App {app_name} in version {app_version}.")
                 insert_query = f"INSERT INTO {sqlite_table_name} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
@@ -209,6 +212,6 @@ def get_url_bin_of_software_to_download():
 
 if __name__ == "__main__":
     sqlite_db_file = sqlite_db_file
-    print(sqlite_db_file)
     init_db()
+    LOGGER.info(get_url_bin_of_software_to_download())
     # insert_dummy_data()
