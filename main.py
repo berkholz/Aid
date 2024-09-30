@@ -18,4 +18,4 @@ activate_download_for_latest_found()
 #get software list which have to be downloaded
 software2download = Db.database.get_url_bin_of_software_to_download()
 
-downloader_new.download_software(software2download)
+downloader.download_software(software2download)

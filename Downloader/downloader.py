@@ -1,9 +1,9 @@
 import requests
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
+import os
 
-from Db.database import get_sw_list_for_platform, get_software_link
-from Downloader.utils import *
+# from Downloader.utils import *
 from Downloader.verify import verify
 import urllib.parse # for parsing download url
 
@@ -12,24 +12,18 @@ def path_init():
     if not os.path.exists(DOWNLOAD_PATH):
         os.makedirs(DOWNLOAD_PATH)
 
-
-def download_sw(software, app_platfom, version, path):
+def get_software(link, base_path, software, version, platform):
     """downloads single software"""
-
-    link = get_software_link(software, app_platfom, version)
-
-    # print (link)
     extension = link.split('?')[0].split('.')[-1]
     parsed_url = urllib.parse.urlsplit(link)
     quoted_file_name = str(parsed_url.path).split('/')[-1]
     # remove url special quoting characters, e.g. %20
     file_name = urllib.parse.unquote(quoted_file_name, encoding='utf-8', errors='replace')
 
-
     if link.split('?')[0].split('.')[-2] == 'tar':
         extension = 'tar.' + extension
 
-    downl_dir = path + "/" + software + '/' + version + '/' + app_platfom + '/'
+    downl_dir = base_path + software + '/' + version + '/' + platform + '/'
 
     if not os.path.exists(downl_dir):
         os.makedirs(downl_dir, exist_ok=True)
@@ -70,39 +64,43 @@ def download_sw(software, app_platfom, version, path):
 
     tqdm.write(f'Downloaded {software} in version {version}: {sv_path}.')
     tqdm.write(f'staring verification of {software}')
-    if os.path.exists(sv_path):
-        result = verify(sv_path)
-        if not result:
-            tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
-            os.remove(sv_path)
-        else:
-            tqdm.write(f'verification successful.')
+    # if os.path.exists(sv_path):
+    #     result = verify(sv_path)
+    #     if not result:
+    #         tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
+    #         os.remove(sv_path)
+    #     else:
+    #         tqdm.write(f'verification successful.')
 
 
-def download(platform, sw_list=[]):
-    """downloads list of software"""
-    path_init()
-    if len(sw_list) == 0:
-        sw_list = get_sw_list_for_platform(platform)
 
-    for f in sw_list:
-        download_sw(f, platform, DOWNLOAD_PATH)
-    return DOWNLOAD_PATH
-
-
-def download_gui(sw_list):
-    """download methode for application gui"""
-    def wrapper(app):
-        app_name = app['program']
-        app_platform = app['platform']
-        app_version = app['version']
-
-        download_sw(app_name, app_platform, app_version, DOWNLOAD_PATH)
-
-    thread_map(wrapper, sw_list, position=1, leave=True)
-
+def download_software(list_of_software):
+    LOGGER.info("Start downloading.")
+    for download in list_of_software:
+        LOGGER.info(f"Downloading {download['app_name']} (Version {download['app_version']}, Arch: {download['app_platform']}) from {download['url_bin']}")
+        get_software(download['url_bin'], DOWNLOAD_PATH, download['app_name'], download['app_version'] ,download['app_platform'])
+    LOGGER.info("Stopping download.")
 
 if __name__ == '__main__':
-    platform = 'win64'
+    LOGGER.info("Starting download.")
+    initialize_download_directory()
 
-    download(platform)
+
+## ablauf:
+# for url do
+    # does file if it allready exists?
+    ## YES, skip download
+    ## NO, download file with url
+
+    # get url for signature
+    # download signature
+    # get url for hash sum
+        ## if hash URL empty
+            # generate hash sha256 of file
+            # store hash value in db and set hash_type to "string"
+        ## else
+            # download hash file
+            # if sig url NOT empty
+                # verifiy hash sum file with signature
+            # verify download with hash sum
+
