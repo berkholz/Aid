@@ -12,13 +12,12 @@ logging.basicConfig(level=settings.LogLevel)
 
 app_name = "firefox_esr"
 full_name = "Firefox ESR"
-architecture = 'win64'
+default_download = 'win64'
 
 lang = 'de'
-download_page = 'https://www.mozilla.org/de/firefox/all/desktop-esr/' + architecture + '-msi/' + lang + '/'
+download_page = 'https://www.mozilla.org/de/firefox/all/desktop-esr/' + default_download + '-msi/' + lang + '/'
 parsed_url = urllib.parse.urlsplit(download_page)
 base_url = parsed_url.scheme + parsed_url.netloc + parsed_url.path
-download_url = ''
 hash_sig_base_url = 'http://releases.mozilla.org/pub/mozilla.org/firefox/releases/'
 
 ################################### FUNCTIONS
