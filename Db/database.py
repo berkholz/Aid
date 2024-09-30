@@ -11,24 +11,17 @@ product_table_name = "products"
 
 
 def init_db():
+    """Inititalize the database schema"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
-    cursor.execute(f"""
-            CREATE TABLE IF NOT EXISTS {product_table_name} (
-            "app_name"	TEXT NOT NULL,
-            "full_name"	TEXT NOT NULL,
-            "default_download"	TEXT,
-            PRIMARY KEY("app_name")
-            );
-            """)
-
-    connection.commit()
     cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS """ + sqlite_table_name + """(
+        CREATE TABLE IF NOT EXISTS """ + sqlite_table_name + """(
         "app_name"	TEXT NOT NULL,
         "app_version"	TEXT NOT NULL,
         "app_platform"	TEXT NOT NULL,
+        "full_name"	TEXT NOT NULL,
+        "download" INTEGER DEFAULT 0,
         "url_bin"	TEXT NOT NULL,
         "hash_type"	TEXT,
         "hash_res"	TEXT,
@@ -38,74 +31,71 @@ def init_db():
         "last_found"	TEXT NOT NULL,
         "last_download"	TEXT,
         "verified_version"	TEXT,
-        PRIMARY KEY("app_name","app_version","app_platform"),
-        FOREIGN KEY (app_name) REFERENCES """ + product_table_name + """(app_name)
+        PRIMARY KEY("app_name","app_version","app_platform")
         );
     """)
-
-
-def add_product(app_name, full_name, default_download):
-    """adds a product to the database if it doesn't exist"""
-    connection = sqlite3.connect(sqlite_db_file)
-    cursor = connection.cursor()
-    query = f"""
-            INSERT INTO {product_table_name} (app_name, full_name, default_download)
-            SELECT ?, ?, ?
-            WHERE NOT EXISTS (
-                SELECT app_name FROM {product_table_name} WHERE app_name = ?
-            )
-        """
-
-    cursor.execute(query, (app_name, full_name, default_download, app_name))
     connection.commit()
     connection.close()
 
 
 def append_software(list_software_dict):
     """adds a software-versions to the database if it doesn't exist'"""
+    global LOGGER
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
     for software in list_software_dict:
         app_name = software['app_name']
-        add_product(app_name, software['full_name'], software['default_download'])
         app_version = software['app_version']
+        full_name = software['full_name']
         last_found = software['last_found']
         last_download = software['last_download']
-        for download in software['downloads']:
 
+        for download in software['downloads']:
             # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
             cursor.execute(
                 "SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=? AND app_version=?",
                 (app_name, download['app_platform'], app_version))
             entry = cursor.fetchall()
+
             if entry and entry[0][0] == app_version:
                 print(f"App {app_name} in version {app_version} already exists.")
                 continue
 
             else:
-                print(f"Inserting App {app_name} in version {app_version}.")
-                cursor.execute(
-                    "INSERT INTO " + sqlite_table_name + "(app_name, app_version, app_platform, url_bin, hash_type,"
-                                                         " hash_res, sig_type, sig_res, url_pub_key, last_found,"
-                                                         " last_download, verified_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                    (app_name, app_version, download['app_platform'], download['url_bin'],
-                     download['hash_type'], download['hash_res'], download['sig_type'], download['sig_res'],
-                     download['url_pub_key'], last_found, last_download, None))
+                LOGGER.info(f"Inserting App {app_name} in version {app_version}.")
+                insert_query = f"INSERT INTO {sqlite_table_name} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
+                LOGGER.debug("SQL execute: " + insert_query)
+                cursor.execute(insert_query)
             connection.commit()
+    connection.close()
 
 
-def get_software_link(app_name, app_platform, app_version):
-    """provides the download link of an application from the database"""
+def activate_download_for_latest_found():
+    """Activate the download flag in database for the software that what was latest found"""
+    LOGGER.info("Entering function activate_download_for_latest_found")
     connection = sqlite3.connect(sqlite_db_file)
+    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    update_query = f"UPDATE {sqlite_table_name} SET download = 1 WHERE last_found = (SELECT MAX(last_found) FROM {sqlite_table_name})"
     cursor = connection.cursor()
+    LOGGER.info("Executing SQL: " + update_query)
+    cursor.execute(update_query)
+    connection.commit()
+    LOGGER.info("Exiting function activate_download_for_latest_found")
+    connection.close()
 
-    cursor.execute(
-        f"SELECT url_bin FROM {sqlite_table_name} WHERE app_name=\"{app_name}\" AND app_platform=\"{app_platform}\" AND app_version=\"{app_version}\"")
-    entry = cursor.fetchone()
-    # print(entry)
-    return entry[0]
-
+def reset_download_flag_for_all():
+    """Reset the download flag in database for all software."""
+    LOGGER.info("Entering function activate_download_for_latest_found")
+    connection = sqlite3.connect(sqlite_db_file)
+    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    update_query = f"UPDATE {sqlite_table_name} SET download = 0"
+    cursor = connection.cursor()
+    LOGGER.info("Executing SQL: " + update_query)
+    cursor.execute(update_query)
+    connection.commit()
+    LOGGER.info("Exiting function activate_download_for_latest_found")
+    connection.close()
 
 def get_checksum_link(platform, app_name, version):
     """provides verification  source for an application from the database"""
@@ -121,81 +111,100 @@ def get_checksum_link(platform, app_name, version):
     else:
         return None
 
-
-def get_available_software():
-    """returns all available software and generates a dictionary for table view"""
+def get_url_bin_of_software_to_download():
+    """returns all software with download = true|>0 and generates a list with dictionaries of every software to download"""
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
-    SELECT app_name, app_version, app_platform, last_found,
-           (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
-    FROM {sqlite_table_name} t1;
+        SELECT app_name, app_version, app_platform, url_bin, last_found,
+	        (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
+        FROM {sqlite_table_name} t1
+        WHERE download >0;
     """
-
     cursor.execute(query)
+    sofware_list = []
 
-    program_data = {}
-
+    # iterate over all software marked for download with MAX_LAST_FOUND
     for row in cursor.fetchall():
-        app_name, app_version, app_platform, last_found, max_last_found = row
-        platform = app_platform
+        # store result in variables
+        app_name, app_version, app_platform, url_bin, last_found, max_last_found = row
 
-        connection2 = sqlite3.connect(sqlite_db_file)
-        cursor2 = connection2.cursor()
-        query2 = "SELECT default_download FROM " + product_table_name + " WHERE app_name = ?"
-        cursor2.execute(query2, (app_name,))
-        default = cursor2.fetchone()[0]
-
-        if app_name not in program_data:
-            program_data[app_name] = []
-
-        #  check for version existence in list
-        version_exists = None
-        for version_data in program_data[app_name]:
-            if version_data['version'] == app_version:
-                version_exists = True
-                version_data[platform] = True if platform in default and last_found == max_last_found else False
-                break
-
-        # When not existent add version to list
-        if not version_exists:
-            version_data = {
-                'version': app_version,
-                'win64': None if platform != 'win64' else (
-                    True if 'win64' in default and last_found == max_last_found else False),
-                'linux': None if platform != 'linux' else (
-                    True if 'linux' in default and last_found == max_last_found else False),
-                'android': None if platform != 'android' else (
-                    True if 'android' in default and last_found == max_last_found else False)
+        # create a dictionary for inserting it into list
+        entry = {
+                'app_name': app_name,
+                'app_version': app_version,
+                'app_platform': app_platform,
+                'url_bin' : url_bin,
+                'last_found': max_last_found
             }
-            program_data[app_name].append(version_data)
-
-    return program_data
-
-
-def get_sw_list_for_platform(platform):
-    """lists all available apps for a platform"""
-    connection = sqlite3.connect(sqlite_db_file)
-    cursor = connection.cursor()
-    cursor.execute(
-        f"SELECT app_name FROM {sqlite_table_name} WHERE app_platform=\"{platform}\""
-    )
-    entries = cursor.fetchall()
-    ret_sw = []
-    for entry in entries:
-        ret_sw.append(entry[0])
-    return ret_sw
+        # add software do sfotware_list which should be downloaded
+        sofware_list.append(entry)
+    return sofware_list
 
 
-def insert_dummy_data():
-    """inserts dummy data for testing"""
-    connection = sqlite3.connect(sqlite_db_file)
-    print(sqlite_db_file)
-    cursor = connection.cursor()
-    SQLs = "INSERT INTO " + sqlite_table_name + " VALUES ('stunnel','5.4','linux','https://www.stunnel.org/download.html','','','','','','','')"
-    print(SQLs)
-    cursor.execute(SQLs)
-    connection.commit()
+# def get_available_software():
+#     """returns all available software and generates a dictionary for table view"""
+#     connection = sqlite3.connect(sqlite_db_file)
+#     cursor = connection.cursor()
+#     query = f"""
+#     SELECT app_name, app_version, app_platform, last_found,
+#            (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
+#     FROM {sqlite_table_name} t1;
+#     """
+
+#     cursor.execute(query)
+
+#     program_data = {}
+
+#     for row in cursor.fetchall():
+#         app_name, app_version, app_platform, last_found, max_last_found = row
+#         platform = app_platform
+
+#         connection2 = sqlite3.connect(sqlite_db_file)
+#         cursor2 = connection2.cursor()
+#         query2 = "SELECT default_download FROM " + product_table_name + " WHERE app_name = ?"
+#         cursor2.execute(query2, (app_name,))
+#         default = cursor2.fetchone()[0]
+
+#         if app_name not in program_data:
+#             program_data[app_name] = []
+
+#         #  check for version existence in list
+#         version_exists = None
+#         for version_data in program_data[app_name]:
+#             if version_data['version'] == app_version:
+#                 version_exists = True
+#                 version_data[platform] = True if platform in default and last_found == max_last_found else False
+#                 break
+
+#         # When not existent add version to list
+#         if not version_exists:
+#             version_data = {
+#                 'version': app_version,
+#                 'win64': None if platform != 'win64' else (
+#                     True if 'win64' in default and last_found == max_last_found else False),
+#                 'linux': None if platform != 'linux' else (
+#                     True if 'linux' in default and last_found == max_last_found else False),
+#                 'android': None if platform != 'android' else (
+#                     True if 'android' in default and last_found == max_last_found else False)
+#             }
+#             program_data[app_name].append(version_data)
+
+#     return program_data
+
+
+# def get_sw_list_for_platform(platform):
+#     """lists all available apps for a platform"""
+#     connection = sqlite3.connect(sqlite_db_file)
+#     cursor = connection.cursor()
+#     cursor.execute(
+#         f"SELECT app_name FROM {sqlite_table_name} WHERE app_platform=\"{platform}\""
+#     )
+#     entries = cursor.fetchall()
+#     ret_sw = []
+#     for entry in entries:
+#         ret_sw.append(entry[0])
+#     return ret_sw
 
 
 if __name__ == "__main__":
