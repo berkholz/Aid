@@ -15,25 +15,38 @@ base_url = parsed_url.scheme + parsed_url.netloc + parsed_url.path
 download_url = ''
 hash_sig_base_url = 'http://releases.mozilla.org/pub/mozilla.org/firefox/releases/'
 
-def getWebSite():
+################################### FUNCTIONS
+
+def getWebSite(url):
     # creating request with custom user agent string
     req = urllib.request.Request(
-        download_page,
+        url,
         data=None,
         headers={
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
         }
     )
-
     with urllib.request.urlopen(req) as f:
         return BeautifulSoup(f.read().decode('utf-8'), 'html.parser')
+
+def extract_version(url):
+    global app_version
+    # here we catch the complete download site for extracting the version
+    website = getWebSite(url)
+
+    # we search for all links with class c-download-button
+    ahrefs = website.find_all('a', 'c-download-button')
+
+    # we extract the version of the download, if you want to get the latest remove "- 1" in brackets
+    app_version = ahrefs[len(ahrefs) - 1].text.split()[0] + 'esr'
+
 
 
 def toJSON(d):
     json_result = {
         "app_name": app_name,
         "full_name": full_name,
-        "default_download": architecture,
+        "default_download": default_download,
         "app_version": app_version,
         "downloads": d,
         "last_found": date.today().isoformat(),
@@ -44,20 +57,10 @@ def toJSON(d):
 
 def run():
     downloads = list()
-    global app_version
-    global download_url
-    global architecture
 
-    # here we catch the complete download site
-    website = getWebSite()
+    extract_version(download_page)
 
-    # we search for all links with class c-download-button
-    ahrefs = website.find_all('a', 'c-download-button')
-
-    # we extract the version of the download, if you want to get the latest remove "- 1" in brackets
-    app_version = ahrefs[len(ahrefs) - 1].text.split()[0] + 'esr'
-
-    # we extract the download url
+    # we set the base url for the download
     download_base_url = 'https://download-installer.cdn.mozilla.net/pub/firefox/releases/' + app_version + '/'
 
     version_url = hash_sig_base_url + app_version + '/'
@@ -66,19 +69,19 @@ def run():
     url_key = version_url + 'KEY'
 
     # win32
-    architecture = 'win32'
-    tmp_url = download_base_url + architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
-    downloads.append({"app_platform": architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
+    tmp_architecture = 'win32'
+    tmp_url = download_base_url + tmp_architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
+    downloads.append({"app_platform": tmp_architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
 
     # win64
-    architecture = 'win64'
-    tmp_url = download_base_url + architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
-    downloads.append({"app_platform": architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
+    tmp_architecture = 'win64'
+    tmp_url = download_base_url + tmp_architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
+    downloads.append({"app_platform": tmp_architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
 
     # linux
-    architecture = 'linux-x86_64'
-    tmp_url = download_base_url + architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
-    downloads.append({"app_platform": architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
+    tmp_architecture = 'linux-x86_64'
+    tmp_url = download_base_url + tmp_architecture + '/' + lang +'/Firefox%20Setup%20' + app_version + '.msi'
+    downloads.append({"app_platform": tmp_architecture, "url_bin": tmp_url, "sig_type": "asc_file", "sig_res": url_asc, "hash_type": "sha256_multi", "hash_res": url_sha256, "url_pub_key": url_key })
 
     return toJSON(downloads)
 
