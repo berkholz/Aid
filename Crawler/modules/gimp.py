@@ -8,8 +8,7 @@ download_url = 'https://www.gimp.org/downloads/'
 app_name = "gimp".lower()
 full_name = "Gnu Image Manipulation Program"
 default_download = 'win64'
-
-base_url = download_url.split('/')[0] + '//' + download_url.split('/')[1] + download_url.split('/')[2] + '/'
+base_url_hashes = "https://download.gimp.org/gimp/"
 app_version = 0
 
 
