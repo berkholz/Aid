@@ -1,3 +1,5 @@
+# import errno
+# from os import error
 import os.path
 import sqlite3
 import logging # import lib for LOGGING
