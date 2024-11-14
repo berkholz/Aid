@@ -60,7 +60,6 @@ def append_software(list_software_dict):
         LOGGER.debug(f"Actual software: {app_name} {app_version} {full_name} {last_found} {last_download}")
 
         for download in software['downloads']:
-            # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
             cursor.execute(
                 "SELECT app_version FROM " + sqlite_table_name + " WHERE app_name=? AND app_platform=? AND app_version=?",
                 (app_name, download['app_platform'], app_version))
