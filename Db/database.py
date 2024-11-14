@@ -65,7 +65,11 @@ def append_software(list_software_dict):
             entry = cursor.fetchall()
 
             if entry and entry[0][0] == app_version:
-                LOGGER.info(f"App {app_name} in version {app_version} already exists, skipping.")
+                LOGGER.info(f"App {app_name} in version {app_version} already exists, updating last_found.")
+                update_query = f"UPDATE {sqlite_table_name} SET last_found = \"{last_found}\" WHERE app_name = \"{app_name}\" AND app_version = \"{app_version}\""
+                cursor = connection.cursor()
+                LOGGER.info("Executing SQL: " + update_query)
+                cursor.execute(update_query)
             else:
                 LOGGER.info(f"Inserting App {app_name} in version {app_version}.")
                 insert_query = f"INSERT INTO {sqlite_table_name} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
