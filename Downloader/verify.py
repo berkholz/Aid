@@ -49,7 +49,8 @@ def verify_downloads(platform, sw_list=[]):
 
 def verify(path):
     """initiates verification for a specific file"""
-    LOGGER.info("Entering verify...")
+    LOGGER.info("Verifing " + path)
+
     file_name = path.split('/')[-1]
     platform = path.split('/')[-2].split('-')[0]
     software = file_name.split('-')[0]
