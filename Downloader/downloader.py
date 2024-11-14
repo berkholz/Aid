@@ -13,10 +13,6 @@ import settings
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=settings.LogLevel)
 
-cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
-
-
 ################################### FUNCTIONS
 def initialize_download_directory():
     """initializes the download-folder"""
