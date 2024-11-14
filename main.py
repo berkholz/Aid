@@ -13,14 +13,13 @@ import Verifier.verifier
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=settings.LogLevel)
 
-# crawl every module stored in modules path and get application information
-application_links = Crawler.crawler.getApplications("Crawler")
-
 
 ################################### MAIN
+# crawl every module stored in modules path and get application information
+applications = Crawler.crawler.getApplications("Crawler")
 
 Db.database.init_db()
-Db.database.append_software(application_links)
+Db.database.append_software(applications)
 
 # activate all software for download which was found latest
 activate_download_for_latest_found()
