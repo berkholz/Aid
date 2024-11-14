@@ -100,7 +100,7 @@ def activate_download_for_latest_found_by_architecture(architecture):
     @param architecture: specify the architecture for which the software download should be activated. Valid archs are: mac, mac_arm, win32, win64, linux, linux-x86_64, android
     """
     valid_architectures = ['mac', 'mac_arm', 'win32', 'win64', 'linux', 'linux-x86_64', 'android']
-    LOGGER.debug("Valid architectures: " + str(valid_architectures)
+    LOGGER.debug("Valid architectures: " + str(valid_architectures))
     LOGGER.info("Entering function activate_download_for_latest_found")
     connection = sqlite3.connect(sqlite_db_file)
     LOGGER.info("Using sqlite file " + sqlite_db_file)
