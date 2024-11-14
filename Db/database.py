@@ -7,7 +7,7 @@ import settings # import global settings
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=settings.LogLevel)
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOGGER.info(" current workoing dir: " + cwd_dir)
+LOGGER.debug(" current working dir: " + cwd_dir)
 
 sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
 sqlite_table_name = "software"
