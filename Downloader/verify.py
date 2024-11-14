@@ -1,4 +1,5 @@
 import hashlib
+from lib2to3.fixes.fix_renames import LOOKUP
 
 import gnupg
 import requests
@@ -8,6 +9,8 @@ from Db.database import * # get_checksum_link, get_sw_list_for_platform, get_url
 from Downloader.utils import *
 import logging # import lib for LOGGING
 import settings # import global settings
+import validators
+
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
