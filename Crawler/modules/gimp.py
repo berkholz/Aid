@@ -11,12 +11,7 @@ default_download = 'win64'
 base_url_hashes = "https://download.gimp.org/gimp/"
 app_version = 0
 
-
-def findPlatformInURL(platform, url):
-    if url.find(platform) > 0 and url.find('.asc') < 1 and url.find('sha256') < 1:
-        return url
-
-
+################################### FUNCTIONS
 def isBinaryURL(ref, platform_string):
     return ref.find(platform_string) > 0 and ref.find('.asc') < 1 and ref.find('sha256') < 1
 
