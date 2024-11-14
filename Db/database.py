@@ -137,7 +137,7 @@ def get_url_bin_of_software_to_download():
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
-        SELECT app_name, app_version, app_platform, url_bin, last_found,
+        SELECT app_name, app_version, app_platform, url_bin, last_found, hash_type, hash_res, sig_type, sig_res, url_pub_key,
 	        (SELECT MAX(last_found) FROM {sqlite_table_name} t2 WHERE t2.app_name = t1.app_name) AS max_last_found
         FROM {sqlite_table_name} t1
         WHERE download >0;
