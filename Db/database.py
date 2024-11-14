@@ -3,12 +3,12 @@
 import os.path
 import sqlite3
 import logging # import lib for LOGGING
-# import settings # import global settings
+import settings # import global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-# logging.basicConfig(level=settings.LogLevel)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=settings.LogLevel)
+# logging.basicConfig(level=logging.DEBUG)
 
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGGER.debug(" current working dir: " + cwd_dir)
