@@ -87,6 +87,29 @@ def activate_download_for_latest_found():
     LOGGER.info("Exiting function activate_download_for_latest_found")
     connection.close()
 
+
+def activate_download_for_latest_found_by_architecture(architecture):
+    """Activate the download flag in database for the software that what was latest found and with given architecture.
+
+    @param architecture: specify the architecture for which the software download should be activated. Valid archs are: mac, mac_arm, win32, win64, linux, linux-x86_64, android
+    """
+    valid_architectures = ['mac', 'mac_arm', 'win32', 'win64', 'linux', 'linux-x86_64', 'android']
+    LOGGER.debug("Valid architectures: " + str(valid_architectures)
+    LOGGER.info("Entering function activate_download_for_latest_found")
+    connection = sqlite3.connect(sqlite_db_file)
+    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    if (architecture in valid_architectures):
+        LOGGER.debug("Given architecture ("+ architecture + ") is valid.")
+        update_query = f"UPDATE {sqlite_table_name} SET download = 1 WHERE app_platform = {architecture} AND last_found = (SELECT MAX(last_found) FROM {sqlite_table_name})"
+        cursor = connection.cursor()
+        LOGGER.info("Executing SQL: " + update_query)
+        cursor.execute(update_query)
+        connection.commit()
+        LOGGER.info("Exiting function activate_download_for_latest_found")
+        connection.close()
+    else:
+        LOGGER.error("Given architecture (" + architecture + ") is NOT valid.")
+
 def reset_download_flag_for_all():
     """Reset the download flag in database for all software."""
     LOGGER.info("Entering function activate_download_for_latest_found")
