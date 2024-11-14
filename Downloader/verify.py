@@ -131,7 +131,10 @@ def download_file(url, local_filename):
 
 
 def import_key_from_url(key_url):
-    """Import a public key from a URL."""
+    """Import a public key from a URL.
+
+    @param: URL of key file to import.
+    """
     gpg = gnupg.GPG()
     try:
         retry = 0
