@@ -75,7 +75,4 @@ def run():
 
 
 if __name__ == "__main__":
-    import sys
-
     print(run())
-    # run(sys.argv[1])
