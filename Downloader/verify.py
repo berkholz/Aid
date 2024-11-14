@@ -136,25 +136,29 @@ def import_key_from_url(key_url):
     @param: URL of key file to import.
     """
     gpg = gnupg.GPG()
-    try:
-        retry = 0
-        response = requests.get(key_url, timeout=300)
-        while response.status_code == 502 and retry < 5:
+
+    if validators.url(key_url):
+        LOGGER.debug("Key URL " + key_url + " is valid.")
+        try:
+            retry = 0
             response = requests.get(key_url, timeout=300)
-            retry += 1
+            while response.status_code == 502 and retry < 5:
+                response = requests.get(key_url, timeout=300)
+                retry += 1
 
-        # print(response.status_code)
-        key_data = response.text
-        import_result = gpg.import_keys(key_data)
-        if import_result.count == 0:
-            print("Error: No key was imported.")
+            LOGGER.info(response.status_code)
+            key_data = response.text
+            import_result = gpg.import_keys(key_data)
+            if import_result.count == 0:
+                LOGGER.info("Error: No key was imported.")
+                return False
+            LOGGER.info(f"Key imported successfully. Fingerprint: {import_result.fingerprints[0]}")
+            return True
+        except requests.RequestException as e:
+            LOGGER.error(f"Error downloading or importing the key: {e}")
             return False
-        # print(f"Key imported successfully. Fingerprint: {import_result.fingerprints[0]}")
-        return True
-    except requests.RequestException as e:
-        print(f"Error downloading or importing the key: {e}")
-        return False
-
+    else:
+        LOGGER.warning("Key URL <" + key_url + "> is not valid, skipping import.")
 
 def verify_signature(file_path, res):
     """Verify a local file against its PGP signature downloaded from a URL."""
