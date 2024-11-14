@@ -4,11 +4,14 @@ The JSON list is something like an API for other componenten of Aid.
 
 The following sequence diagram show the process of Crawlers components:
 
-![UML-Sequence Diagram](//www.plantuml.com/plantuml/dpng/dLFDRjim3BxhAJxab1ps0ZaC7RfXFsXNOElEXMBHiG2PD2XwRjz-LUt445Bai9j1yllX9_eccrSR--G6hnQRE7WsR1wi8yMjz8CmiMsgxgtwAP4wTv1dO7ClOKoKwvcv-FGvwZjbHnpm2dPLxpiRAPCvjmZWmqUiFDWZDvxHnaGPaT7B6CfdY4gDYRwW5KMMrYQlX20J9_41_UpFhLI5-AInXvADoaWn6wI5Jmd3YtLoac8n7EWOcICVCKNhyEHS4XaGZTGRGVwI5k3YQG5w3cXArJg2ZhpTeIVh93WiUnKZfxMnnzSlZwljYGuv6ZcS9zOyiB-Om_RRu_tTxanT3TEpgMzi3UVLRuvbGvKU1NWLjuhz-NMtOkgyoxRHChmsNJHgR5JA_qjR3COsDjwAoyxdRiapnoFxAzH7ulb9Vln--3a_ba_fxBAIp6_zAuOlRgIGEfphrOWFOHOjYon71vFghawdI1ogAx_utsh9zpYmRKTktk8vadqQXhIabRUxdRiX3cEV_W40)
+![UML-Sequence Diagram](https://www.plantuml.com/plantuml/png/dLFDRjH03BxFKtpggJtm0ZsWeeAWg2qIb7Crct4s8qtioEEGzkt9ACb6iq0Ft2Bx-_diSMwoURMnJsxmQh69WsV3nSE7kqVSIZy84zj5rRnLFoLIvmxoWXagOKoKQynIVFuOzIzbHnmmartLksCZPJBdLWEyUuzT1zV8ZMUqSJP3PFGoXl8Peb9ZegzeHP6bjSah8SZ4INn0l-HpkrGHtZokeMIZCbBC1cdXKyBmQfriLYo60nqZS-GZfcWTdfrB8WEYaNeZo2_IGbmphKJF0KsfMaVGaI-lqDCi71pMkKgGRMnSu_EdfptsH8SSZHnEY7qVC_OSXyilJm_tLoVf2amlfhwnVJbptXpBX2ez2l5Dtcxsy_lzpgdtNQQDbk6rwQ9HOwDI_b_P4Z2siV5MKdO-T-i-SpooVqFwIBmyoTSVtnwNn_8fdL9Mbddf_plm7pTIH1ssUWtn8Q3qbq7wHSIakglj58b3TUNdlzlkw2j-qLyx-LppPXOT-_GR)
 
+
+
+Diagram source:
 ```
 @startuml
-participant "Other Component"
+participant "MAIN Component"
 participant Crawler
 
 box  "Modules"
@@ -32,7 +35,6 @@ loop iterate over all moudle files and call the run() method
   Crawler -> Crawler : add JSON from module to list of all modules
 end
 
-Crawler -> "Other Component" : return JSON list of all modules (function getApplications())
-
+Crawler -> "MAIN Component" : return a list of all JSON returns of all modules
 @enduml
 ```
