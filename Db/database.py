@@ -130,7 +130,14 @@ def reset_download_flag_for_all():
     connection.close()
 
 def get_checksum_link(platform, app_name, version):
-    """provides verification  source for an application from the database"""
+    """
+    Returns the verification sources for an application with app_name,
+    version and platform from the database.
+
+    @param platform: platform of the application to find
+    @param app_name: name of the application to find
+    @param version: version of the application to find
+    """
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     cursor.execute(
