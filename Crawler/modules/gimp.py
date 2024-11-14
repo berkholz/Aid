@@ -1,8 +1,22 @@
+from platform import win32_ver
+from textwrap import shorten
+from tkinter import NO
 import urllib.request
 from bs4 import BeautifulSoup
 import urllib
-from datetime import date
-import requests
+from datetime import date # for getting last_found date
+import requests # for requesting HTTP ressources
+
+import urllib.parse # for parsing download url
+import logging # for logging
+import settings # import global settings
+import re # import for parsing version string
+
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LogLevel)
+# logging.basicConfig(level=logging.DEBUG)
 
 download_url = 'https://www.gimp.org/downloads/'
 app_name = "gimp".lower()
@@ -14,6 +28,12 @@ app_version = 0
 ################################### FUNCTIONS
 def isBinaryURL(ref, platform_string):
     return ref.find(platform_string) > 0 and ref.find('.asc') < 1 and ref.find('sha256') < 1
+
+def get_hash_file(version, platform,  base_url):
+    shortend_version = version.split('.')
+    del shortend_version[len(shortend_version)-1]
+    concatenated_shortend_version = ".".join(shortend_version)
+    return base_url + "v" + concatenated_shortend_version + "/" + platform + "/SHA256SUMS"
 
 
 def getWebSite(url):
@@ -37,34 +57,47 @@ def toJSON(d):
 
 
 def run():
-    downloads = list()
-    website = getWebSite()
-    # print (website)
-    win = website.find(id='win')
     global app_version
-    # print(newest_table)
-    win_link = win.find('a', id="win-download-link", href=True)['href']
-    win_sha256 = win.find('kbd').text
-    # print (win_link," ",win_sha256)
+    downloads = list()
+
+    website = getWebSite(download_url)
+
+    # windows links
+    win = website.find(id='win')
+
+    win_link = "https:" + win.find('a', id="win-download-link", href=True)['href']
+    LOGGER.debug("extracted link:" + win_link)
+
+    app_version = re.findall("[0-9]+\.[0-9]+\.[0-9]+", win.find('a', id="win-download-link", href=True).text)[0]
+    LOGGER.debug("extracted version: " + app_version)
 
     if isBinaryURL(win_link, '.exe'):
-        tmp_url_bin = ('https:' + win_link)
-        # print(tmp_url_bin)
-        app_version = tmp_url_bin.split('/')[4]
         downloads.append(
-            {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": 'string',
-             "hash_res": win_sha256, "url_pub_key": None})
+            {"app_platform": "win64", "url_bin": win_link, "sig_type": None, "sig_res": None, "hash_type": "sha256_multi",
+             "hash_res": get_hash_file(app_version, "windows", base_url_hashes), "url_pub_key": None})
 
-    lin = website.find(id='linux')
-    lin_link = lin.find('a', href=True)['href']
-    # print(lin_link)
-
-    if isBinaryURL(lin_link, '.flatpakref'):
-        # we have to find tar.gz, because it is a generic linux tar.gz package
-        tmp_url_bin = findPlatformInURL('.flatpakref', lin_link)
-        downloads.append({"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
-                 "hash_res": None, "url_pub_key": None})
-        # print(url_base + a['href'])
+    # mac links
+    for mac_arch in ['mac-arm64-buttons','mac-x86_64-buttons']:
+        # find elements for specific mac architecture
+        macosx = website.find(id=mac_arch)
+        # get the hrefs
+        macosx_links = macosx.find_all('a')
+        # aprse all links
+        for link in macosx_links:
+            ahref = link.get('href')
+            # we want the direct download, so no torrent
+            if (re.search("\.torrent", ahref) == None):
+                mac_link = "https:" + ahref
+                # extracting the version
+                app_version = re.findall("[0-9]+\.[0-9]+\.[0-9]+", link.text)[0]
+                # setting the arch for the db entry
+                if mac_arch == "mac-arm64-buttons":
+                    app_platform = "mac_arm"
+                else:
+                    app_platform = "mac"
+                downloads.append(
+                    {"app_platform": app_platform, "url_bin": mac_link, "sig_type": None, "sig_res": None, "hash_type": "sha256_multi",
+                    "hash_res": get_hash_file(app_version, "macos", base_url_hashes), "url_pub_key": None})
     return toJSON(downloads)
 
 
