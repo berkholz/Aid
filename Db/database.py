@@ -55,6 +55,7 @@ def append_software(list_software_dict):
         full_name = software['full_name']
         last_found = software['last_found']
         last_download = software['last_download']
+        LOGGER.debug(f"Actual software: {app_name} {app_version} {full_name} {last_found} {last_download}")
 
         for download in software['downloads']:
             # print(app_name, app_version, download['app_platform'], download['url_bin'], download['url_sha256'], download['url_asc'], last_found, last_download )
