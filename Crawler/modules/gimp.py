@@ -16,9 +16,9 @@ def isBinaryURL(ref, platform_string):
     return ref.find(platform_string) > 0 and ref.find('.asc') < 1 and ref.find('sha256') < 1
 
 
-def getWebSite():
+def getWebSite(url):
     # creating request with custom user agent string
-    response = requests.get(download_url).text
+    response = requests.get(url).text
     return BeautifulSoup(response, 'html.parser')
 
 
