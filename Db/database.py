@@ -172,7 +172,7 @@ def get_url_bin_of_software_to_download():
     # iterate over all software marked for download with MAX_LAST_FOUND
     for row in cursor.fetchall():
         # store result in variables
-        app_name, app_version, app_platform, url_bin, last_found, max_last_found = row
+        app_name, app_version, app_platform, url_bin, last_found, hash_type, hash_res, sig_type, sig_res, url_pub_key, max_last_found = row
 
         # create a dictionary for inserting it into list
         entry = {
@@ -180,7 +180,12 @@ def get_url_bin_of_software_to_download():
                 'app_version': app_version,
                 'app_platform': app_platform,
                 'url_bin' : url_bin,
-                'last_found': max_last_found
+                'last_found': max_last_found,
+                'hash_type': hash_type,
+                'hash_res': hash_res,
+                'sig_type': sig_type,
+                'sig_res': sig_res,
+                'url_pub_key': url_pub_key
             }
         # add software do sfotware_list which should be downloaded
         sofware_list.append(entry)
