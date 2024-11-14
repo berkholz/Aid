@@ -30,4 +30,9 @@ activate_download_for_latest_found()
 #get software list which have to be downloaded
 software2download = Db.database.get_url_bin_of_software_to_download()
 
-downloader.download_software(software2download)
+#import vendor keys for verifing
+# Verifier.verifier.import_keys(software2download)
+
+Downloader.downloader.download(software2download)
+
+# Verifier.verifier.verify(software2download)
