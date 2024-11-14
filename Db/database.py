@@ -115,7 +115,25 @@ def get_checksum_link(platform, app_name, version):
         return None
 
 def get_url_bin_of_software_to_download():
-    """returns all software with download = true|>0 and generates a list with dictionaries of every software to download"""
+    """
+    Returns all software with download = true OR >0 and generates a list with dictionaries of every software to download.
+
+    Dictionary contains the followong entries:
+    [
+        {
+            'app_name': "value",
+            'app_version': "value",
+            'app_platform': "value",
+            'url_bin' : "value",
+            'last_found': "value",
+            'hash_type': "value",
+            'hash_res': "value",
+            'sig_type': "value",
+            'sig_res': "value",
+            'url_pub_key': "value"
+        }
+    ]
+    """
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
     query = f"""
