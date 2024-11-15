@@ -17,6 +17,7 @@ app_version = '0'
 
 lang = 'de'
 download_page = 'https://www.mozilla.org/de/firefox/all/desktop-esr/' + default_download + '-msi/' + lang + '/'
+version_page = 'https://www.mozilla.org/de/firefox/organizations/notes/'
 parsed_url = urllib.parse.urlsplit(download_page)
 base_url = parsed_url.scheme + parsed_url.netloc + parsed_url.path
 hash_sig_base_url = 'http://releases.mozilla.org/pub/mozilla.org/firefox/releases/'
@@ -40,12 +41,10 @@ def extract_version(url):
     website = getWebSite(url)
 
     # we search for all links with class c-download-button
-    ahrefs = website.find_all('a', 'c-download-button')
-
+    version_element = website.find_all('span', 'c-release-version')
+    LOGGER.debug("HTML element with version string: " + str(version_element))
     # we extract the version of the download, if you want to get the latest remove "- 1" in brackets
-    app_version = ahrefs[len(ahrefs) - 1].text.split()[0] + 'esr'
-
-
+    return version_element[0].get_text()# + 'esr'
 
 def toJSON(d):
     json_result = {
@@ -61,9 +60,10 @@ def toJSON(d):
 
 
 def run():
+    global app_version
     downloads = list()
 
-    extract_version(download_page)
+    app_version = extract_version(version_page)
 
     # we set the base url for the download
     download_base_url = 'https://download-installer.cdn.mozilla.net/pub/firefox/releases/' + app_version + '/'
