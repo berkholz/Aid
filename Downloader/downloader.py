@@ -1,3 +1,6 @@
+from threading import local
+from turtle import down
+from wsgiref.simple_server import software_version
 import requests
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
@@ -24,39 +27,24 @@ def initialize_download_directory():
     else:
         LOGGER.info("Download directory " + settings.DOWNLOAD_PATH + " allready created.")
 
-def get_software(link, base_path, software, version, platform):
-    """downloads single software"""
-    extension = link.split('?')[0].split('.')[-1]
-    parsed_url = urllib.parse.urlsplit(link)
-    quoted_file_name = str(parsed_url.path).split('/')[-1]
-    # remove url special quoting characters, e.g. %20
-    file_name = urllib.parse.unquote(quoted_file_name, encoding='utf-8', errors='replace')
 
-    if link.split('?')[0].split('.')[-2] == 'tar':
-        extension = 'tar.' + extension
+def download_file(url, local_filename):
+    """
+    Function to download a single file from URL. It is called from download_software()
 
-    downl_dir = base_path + software + '/' + version + '/' + platform + '/'
+    @param url: url that should be downloaded
+    @param local_filename: save download as local_filename
+    """
+    # download file from url
+    load = requests.get(url, timeout=300, stream=True)
 
-    if not os.path.exists(downl_dir):
-        os.makedirs(downl_dir, exist_ok=True)
-    sv_path = downl_dir + file_name
-
-    if os.path.exists(sv_path):
-        res = verify(sv_path)
-        if res is True:
-            tqdm.write(f'verified download: {software} version: {version}')
-            return
-        else:
-            tqdm.write('unverifiable Download found,')
-
-
-    tqdm.write(f"Starting download of {software}, version {version}...")
-    load = requests.get(link, timeout=300, stream=True)
+    # get file size for progress bar
     total = int(load.headers.get('content-length', 0))
 
     try:
-        with open(sv_path, 'wb') as file, tqdm(
-                desc=f'Downloading {software}',
+    # show progress bar, see tqdm
+        with open(local_filename, 'wb') as file, tqdm(
+                desc=f"Downloading {url}",
                 total=total,
                 unit='iB',
                 unit_scale=True,
@@ -69,12 +57,75 @@ def get_software(link, base_path, software, version, platform):
                 size = file.write(data)
                 bar.update(size)
     except Exception as e:
-        print(e)
-        os.remove(sv_path)
+        LOGGER.error(e)
+        os.remove(local_filename)
 
-    tqdm.write(f'Downloaded {software} in version {version}: {sv_path}.')
-    tqdm.write(f'staring verification of {software}')
-    # if os.path.exists(sv_path):
+
+def download_software(software_download, base_path):
+    """
+    Function for downloading a single software package.
+    It is called by function download().
+
+    @param software_download: dictionary with app_name, app_version and app_plattform
+    @param base_path: directory of the path where download is saved
+    """
+    extension = software_download['url_bin'].split('?')[0].split('.')[-1]
+    parsed_url = urllib.parse.urlsplit(software_download['url_bin'])
+    quoted_file_name = str(parsed_url.path).split('/')[-1]
+
+    # remove url special quoting characters, e.g. %20
+    file_name = urllib.parse.unquote(quoted_file_name, encoding='utf-8', errors='replace')
+
+    # setting download path with <app_name>/<app_version>/<app_platform>/
+    download_dir = base_path + software_download['app_name'] + '/' + software_download['app_version'] + '/' + software_download['app_platform'] + '/'
+
+    # check if download path exísts, if not create directory structure
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir, exist_ok=True)
+
+    if not os.path.exists(download_dir + file_name):
+        LOGGER.info(f"Downloading {software_download['app_name']} (Version {software_download['app_version']}, Arch: {software_download['app_platform']}) from {software_download['url_bin']}")
+        download_file(software_download['url_bin'], download_dir + file_name)
+        LOGGER.info("File saved to: " + download_dir + file_name)
+    else:
+        LOGGER.info("File " + download_dir + file_name + " allready exists. Skipping donwload.")
+
+
+def verify_signature(software_download, base_path):
+#def verify(path):
+    """initiates verification for a specific file"""
+    LOGGER.info("Verifing signature of " + software_download['app_name'])
+
+    # file_name = path.split('/')[-1]
+    # platform = path.split('/')[-2].split('-')[0]
+    # software = file_name.split('-')[0]
+    # i = -1
+    # if file_name.split('.')[-2] == 'tar':
+    #     i = -2
+    # software_version = ".".join(file_name.split('-')[1].split('.')[:i])
+
+    software_version = software_download['app_version']
+    software_name = software_download['app_name']
+    # # we get our verification source
+    # res = get_checksum_link(platform, software, software_version)
+    LOGGER.info("checksum link: " + software_download['sig_res'])
+    if software_download['sig_res'] is None:
+         tqdm.write(f'No signature for software {software_name} {software_version} found in database')
+         return False
+
+    # # we start verifying checksums
+    # hash_verify_status = verify_hash(path, software, res)
+
+    # # and the continue with signatures
+    # sig_verify_status = verify_signature(path, res)
+
+    # # check for failed verification
+    # if hash_verify_status == False or sig_verify_status == False:
+    #     return False
+    # else:
+    #     return True
+
+    # if os.path.exists():
     #     result = verify(sv_path)
     #     if not result:
     #         tqdm.write(f'verification failed, deleting {software} from path {sv_path}')
@@ -83,13 +134,16 @@ def get_software(link, base_path, software, version, platform):
     #         tqdm.write(f'verification successful.')
 
 
+def download(list_of_software):
+    """
+    Function for downloading a list of software. It triggers the function download_software().
 
-def download_software(list_of_software):
-    LOGGER.info("Start downloading.")
+    @param list_of_software: List of dictionaries of software packages.
+    """
+    LOGGER.info("Initiating download.")
     for download in list_of_software:
-        LOGGER.info(f"Downloading {download['app_name']} (Version {download['app_version']}, Arch: {download['app_platform']}) from {download['url_bin']}")
-        get_software(download['url_bin'], DOWNLOAD_PATH, download['app_name'], download['app_version'] ,download['app_platform'])
-    LOGGER.info("Stopping download.")
+        download_software(download, settings.DOWNLOAD_PATH)
+    LOGGER.info("Finishing download.")
 
 if __name__ == '__main__':
     LOGGER.info("Starting download.")
