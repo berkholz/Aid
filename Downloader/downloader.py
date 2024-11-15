@@ -63,9 +63,7 @@ def get_software(link, base_path, software, version, platform):
                 unit_divisor=2048,
                 position=0,
                 leave=True,
-                dynamic_ncols=True,
-                # colour='blue',
-                # text_colour='blue',
+                dynamic_ncols=True
         ) as bar:
             for data in load.iter_content(chunk_size=1024):
                 size = file.write(data)
