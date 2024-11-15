@@ -96,21 +96,3 @@ if __name__ == '__main__':
     initialize_download_directory()
 
 
-## ablauf:
-# for url do
-    # does file if it allready exists?
-    ## YES, skip download
-    ## NO, download file with url
-
-    # get url for signature
-    # download signature
-    # get url for hash sum
-        ## if hash URL empty
-            # generate hash sha256 of file
-            # store hash value in db and set hash_type to "string"
-        ## else
-            # download hash file
-            # if sig url NOT empty
-                # verifiy hash sum file with signature
-            # verify download with hash sum
-
