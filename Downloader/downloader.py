@@ -17,12 +17,12 @@ logging.basicConfig(level=settings.LogLevel)
 def initialize_download_directory():
     """initializes the download-folder"""
     LOGGER.info("Checking if download directory exists.")
-    if not os.path.exists(DOWNLOAD_PATH):
+    if not os.path.exists(settings.DOWNLOAD_PATH):
         LOGGER.info("Download directory does not exist, creating.")
-        os.makedirs(DOWNLOAD_PATH)
-        LOGGER.info("Download directory " + DOWNLOAD_PATH + " created.")
+        os.makedirs(settings.DOWNLOAD_PATH)
+        LOGGER.info("Download directory " + settings.DOWNLOAD_PATH + " created.")
     else:
-        LOGGER.info("Download directory " + DOWNLOAD_PATH + " allready created.")
+        LOGGER.info("Download directory " + settings.DOWNLOAD_PATH + " allready created.")
 
 def get_software(link, base_path, software, version, platform):
     """downloads single software"""
