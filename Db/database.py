@@ -120,7 +120,7 @@ def activate_download_for_latest_found_by_architecture(architecture):
 
 def reset_download_flag_for_all():
     """Reset the download flag in database for all software."""
-    LOGGER.info("Entering function activate_download_for_latest_found")
+    LOGGER.info("Entering function reset_download_flag_for_all")
     connection = sqlite3.connect(sqlite_db_file)
     LOGGER.info("Using sqlite file " + sqlite_db_file)
     update_query = f"UPDATE {sqlite_table_name} SET download = 0"
@@ -128,7 +128,7 @@ def reset_download_flag_for_all():
     LOGGER.info("Executing SQL: " + update_query)
     cursor.execute(update_query)
     connection.commit()
-    LOGGER.info("Exiting function activate_download_for_latest_found")
+    LOGGER.info("Exiting function reset_download_flag_for_all")
     connection.close()
 
 def get_checksum_link(platform, app_name, version):
