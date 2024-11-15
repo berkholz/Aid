@@ -1,13 +1,13 @@
 The Automated internet downloader(Aid) consists of some independent components, each has its own aspect of Aid.
 These components are:
-- ![Crawler](Crawler.md)
-- ![Database](Database.md)
-- ![Downloader](Downloader.md)
-- ![Verifier](Verifier.md)
-- ![Prebuild](PreBuild.md)
-- ![Packager](Packager.md)
-- ![Unpackager](Unpacker.md)
-- ![Manager](Manager.md)
+- [Crawler](Crawler.md)
+- [Database](Database.md)
+- [Downloader](Downloader.md)
+- [Verifier](Verifier.md)
+- [Prebuild](PreBuild.md)
+- [Packager](Packager.md)
+- [Unpackager](Unpacker.md)
+- [Manager](Manager.md)
 
 
 The following diagram shows the states Aid went through. Each involved component is described shortly:
