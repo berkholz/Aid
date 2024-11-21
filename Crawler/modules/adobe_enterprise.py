@@ -1,9 +1,17 @@
 from bs4 import BeautifulSoup
 import urllib
-import datetime 
+import datetime
 import requests                 # for getting http ressources
 import re                       #import for filtering Links via RegExp
-from datetime import date       # for generating dates in JSON
+from datetime import date
+import logging # import lib for LOGGING
+# import settings # import global settings
+
+
+################################### VARIABLES
+LOGGER = logging.getLogger(__name__)
+# logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=logging.DEBUG)
 
 downloads = list()
 
