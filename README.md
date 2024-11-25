@@ -49,7 +49,7 @@ To run Aid on Linux you need some python libraries installed:
 | :--- | :--- |
 |* python3-tk<br>* python-tk<br>* python3-tqdm<br>* python3-gnupg<br>* gnupg<br>* python3-validators |* python3-tqdm<br>* python3-gnupg<br>* gnupg<br>* python3-validators |
 
-### Checkout git repository
+#### Checkout git repository
 There are currently two branches:
 * master
 * feature_headless
@@ -69,7 +69,7 @@ git clone -b feature_headless https://github.com/berkholz/Aid.git
 ```
 
 
-### Open project in your IDE, e.g. VS Code
+#### Open project in your IDE, e.g. VS Code
 After installing the needed packages, start your favorit IDE for python, for example [Visual Studio Code](https://code.visualstudio.com/)]. Here we use VS Code.
 
 In VS Code, open the folder with the git repository.
