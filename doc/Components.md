@@ -3,11 +3,11 @@ These components are:
 - [Crawler](Crawler.md)
 - [Database](Database.md)
 - [Downloader](Downloader.md)
-- [Verifier](Verifier.md)
-- [Prebuild](PreBuild.md)
-- [Packager](Packager.md)
-- [Unpackager](Unpacker.md)
-- [Manager](Manager.md)
+- [Verifier](Verifier.md) - not yet implemented
+- [Prebuild](PreBuild.md) - not yet implemented
+- [Packager](Packager.md) - not yet implemented
+- [Unpackager](Unpacker.md) - not yet implemented
+- [Manager](Manager.md) - not yet implemented
 
 
 The following diagram shows the states Aid went through. Each involved component is described shortly:
