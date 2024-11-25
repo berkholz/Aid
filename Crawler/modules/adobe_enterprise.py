@@ -22,7 +22,7 @@ default_architecture = 'win32'
 app_version = 0
 
 
-################################### MAIN
+################################### FUNCTIONS
 def getWebSiteAsRequest(url):
     """
     Function to get the website (url).
