@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 downloads = list()
-
+download_url = ""
 app_name = "adobe_enterprise".lower()
 full_name = "Adobe Reader Enterprise"
 default_architecture = 'win32'
