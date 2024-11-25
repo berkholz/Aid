@@ -1,5 +1,3 @@
-> [!NOTE]
-> This module is implemented and working.
 
 The Downloader component is responsible for downloading the software packages.
 
