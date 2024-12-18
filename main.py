@@ -4,7 +4,6 @@ import Db.database
 from Db.database import activate_download_for_latest_found
 from Db.database import reset_download_flag_for_all
 import Downloader.downloader
-from Downloader.verify import import_key_from_url, verify
 import logging # import lib for LOGGING
 import settings # import global settings
 import Verifier.verifier
