@@ -7,7 +7,7 @@ import settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 all_list = list()
 json_list = list()

@@ -8,7 +8,7 @@ import settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 download_url = 'https://www.7-zip.org/download.html'
 app_name = "7zip".lower()

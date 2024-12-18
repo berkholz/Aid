@@ -6,12 +6,12 @@ import requests                 # for getting http ressources
 import re                       #import for filtering Links via RegExp
 from datetime import date       # for generating dates in JSON
 import logging # for logging output
-# import settings # import for global settings
+import settings # import for global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-# logging.basicConfig(level=settings.LogLevel)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=settings.LOGLEVEL)
+# logging.basicConfig(level=logging.DEBUG)
 
 downloads = list()
 

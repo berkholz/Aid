@@ -14,7 +14,7 @@ import hashlib # for generating sha256 sum
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 
 ################################### FUNCTIONS

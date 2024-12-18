@@ -14,7 +14,7 @@ import settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 ################################### FUNCTIONS
 def initialize_download_directory():

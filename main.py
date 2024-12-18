@@ -10,8 +10,8 @@ import settings # import global settings
 import Verifier.verifier
 
 ################################### VARIABLES
-LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+# LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 
 ################################### MAIN

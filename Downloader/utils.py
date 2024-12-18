@@ -6,7 +6,7 @@ import settings # import global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')

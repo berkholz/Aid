@@ -15,7 +15,7 @@ import re # import for parsing version string
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 # logging.basicConfig(level=logging.DEBUG)
 
 download_url = 'https://www.gimp.org/downloads/'
