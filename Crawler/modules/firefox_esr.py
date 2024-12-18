@@ -47,7 +47,7 @@ def extract_version(url):
 
     # we search for all links with class c-download-button
     version_element = website.find_all('span', 'c-release-version')
-    LOGGER.debug("HTML element with version string: " + str(version_element))
+    LOGGER.debug("HTML element with version string: %s", str(version_element))
     # we extract the version of the download, if you want to get the latest remove "- 1" in brackets
     return version_element[0].get_text()# + 'esr'
 
