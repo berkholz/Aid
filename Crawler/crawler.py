@@ -16,7 +16,10 @@ module_path = "modules"
 
 
 ################################### FUNCTIONS
-def getApplications(relative_path=''):
+def get_applications():
+    """
+    Get all application by crawling all modules.
+    """
     # iterate over all mpython files in directory crawler_configuration.module_path
     for f in glob.glob(os.path.dirname(__file__) + "/" + module_path + "/*.py"):
         if os.path.isfile(f) and not os.path.basename(f).startswith('_'):
