@@ -37,6 +37,11 @@ def getWebSite(url):
         return BeautifulSoup(f.read().decode('utf-8'), 'html.parser')
 
 def extract_version(url):
+    """
+    Function for extracting the version string of the website.
+
+    @param url: Website from where the version string is extracted.
+    """
     # here we catch the complete download site for extracting the version
     website = getWebSite(url)
 
