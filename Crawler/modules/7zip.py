@@ -31,7 +31,7 @@ def isBinaryURL(ref, platform_string):
 
 def getWebSite():
     # creating request with custom user agent string
-    response = requests.get(download_url).text
+    response = requests.get(download_url, timeout=settings.CRAWLER_MODULE_REQUEST_TIMEOUT).text
     return BeautifulSoup(response, 'html.parser')
 
 
