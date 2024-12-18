@@ -22,7 +22,6 @@ full_name = "Adobe Reader Enterprise"
 default_architecture = 'win32'
 app_version = 0
 
-
 ################################### FUNCTIONS
 def getWebSiteAsRequest(url):
     """
@@ -33,7 +32,7 @@ def getWebSiteAsRequest(url):
     """
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'}
     try:
-        req = requests.get(url, headers=headers, timeout=10.000)
+        req = requests.get(url, headers=headers, timeout=settings.CRAWLER_MODULE_REQUEST_TIMEOUT)
     except requests.exceptions.RequestException as e:
         LOGGER.error(e)
         req = None
