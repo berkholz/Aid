@@ -5,8 +5,9 @@ import datetime
 import requests                 # for getting http ressources
 import re                       #import for filtering Links via RegExp
 from datetime import date
-import logging # import lib for LOGGING
-# import settings # import global settings
+import logging
+
+import settings # import global settings
 
 
 ################################### VARIABLES
