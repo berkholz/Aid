@@ -56,13 +56,12 @@ def run():
     tables = website.table
     LOGGER.debug("Extracting tables of websites: %s", tables)
     newest_table = tables.find_all('table')[3]
-    global app_version
-    # print(newest_table)
+
     for a in newest_table.find_all('a', href=True):
-        tmp_platform = ''
+        # tmp_platform = ''
         tmp_url_bin = ''
-        tmp_url_asc = ''
-        tmp_url_sha256 = ''
+        # tmp_url_asc = ''
+        # tmp_url_sha256 = ''
 
         if isBinaryURL(a, 'x64.exe'):
             tmp_url_bin = base_url + findPlatformInURL('x64.exe', a['href'])
