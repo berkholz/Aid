@@ -1,5 +1,5 @@
 import hashlib
-from lib2to3.fixes.fix_renames import LOOKUP
+# from lib2to3.fixes.fix_renames import LOOKUP
 
 import gnupg
 import requests
