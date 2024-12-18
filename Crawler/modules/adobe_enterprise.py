@@ -23,7 +23,7 @@ default_architecture = 'win32'
 app_version = 0
 
 ################################### FUNCTIONS
-def getWebSiteAsRequest(url):
+def get_website_as_request(url):
     """
     Function to get the website (url).
 
@@ -38,7 +38,7 @@ def getWebSiteAsRequest(url):
         req = None
     return req
 
-def getMonthNameByNumber(month_number):
+def get_month_name_by_number(month_number):
     """
     Function to convert a month number to a 3 letter month name.
 
@@ -60,22 +60,22 @@ def build_download_link():
     month_name = ""
 
     try:
-        request = getWebSiteAsRequest(base_url + getMonthNameByNumber(month_number) + year + ".html")
+        request = get_website_as_request(base_url + get_month_name_by_number(month_number) + year + ".html")
     except requests.exceptions.RequestException as e:
         LOGGER.exception(e)
 
     # check if
     if request == None:
-        destination_url = base_url + getMonthNameByNumber(month_number - 1) + year + ".html"
+        destination_url = base_url + get_month_name_by_number(month_number - 1) + year + ".html"
     else:
         if request.status_code == 404:
-            destination_url = base_url + getMonthNameByNumber(month_number - 1) + year + ".html"
+            destination_url = base_url + get_month_name_by_number(month_number - 1) + year + ".html"
         else:
             # return link with month and year
-            destination_url = base_url + getMonthNameByNumber(month_number) + year + ".html"
+            destination_url = base_url + get_month_name_by_number(month_number) + year + ".html"
     return destination_url
 
-def getWebSite(download_url):
+def get_website(download_url):
     """
     creating request with custom user agent string
 
@@ -112,7 +112,7 @@ def run():
     global downloads
     global app_version
 
-    website = getWebSite(build_download_link())
+    website = get_website(build_download_link())
 
     app_version = extract_version(website)
 
