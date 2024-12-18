@@ -20,7 +20,9 @@ sqlite_table_name = "software"
 ################################### FUNCTIONS
 
 def init_db():
-    """Inititalize the database schema"""
+    """
+    Inititalize the database schema.
+    """
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
