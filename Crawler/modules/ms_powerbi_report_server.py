@@ -6,12 +6,12 @@ import requests                 # for getting http ressources
 import re                       #import for filtering Links via RegExp
 from datetime import date       # for generating dates in JSON
 import logging # for logging output
-# import settings # import for global settings
+import settings # import for global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-# logging.basicConfig(level=settings.LogLevel)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=settings.LOGLEVEL)
+# logging.basicConfig(level=logging.DEBUG)
 
 downloads = list()
 
@@ -27,7 +27,7 @@ download_page = ''
 version_page = ''
 
 ################################### FUNCTIONS
-def getWebSite(url):
+def get_website(url):
     """
     Creating request with custom user agent string.
 
@@ -122,11 +122,11 @@ def run():
     global downloads
     global app_version
 
-    website_entry = getWebSite(entry_page)
+    website_entry = get_website(entry_page)
     # hrefs = website.find_all('a',  attrs={'data-bi-ecn': re.compile(".*Advanced.*")})
     download_page = extract_download_link(website_entry)
 
-    website_download = getWebSite(download_page)
+    website_download = get_website(download_page)
     app_version = extract_version(website_download)
     links = extract_links(website_download)
 

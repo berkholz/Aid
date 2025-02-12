@@ -5,13 +5,14 @@ import datetime
 import requests                 # for getting http ressources
 import re                       #import for filtering Links via RegExp
 from datetime import date
-import logging # import lib for LOGGING
-# import settings # import global settings
+import logging
+
+import settings # import global settings
 
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-# logging.basicConfig(level=settings.LogLevel)
+# logging.basicConfig(level=settings.LOGLEVEL)
 logging.basicConfig(level=logging.DEBUG)
 
 downloads = list()
@@ -21,9 +22,8 @@ full_name = "Adobe Reader Enterprise"
 default_architecture = 'win32'
 app_version = 0
 
-
 ################################### FUNCTIONS
-def getWebSiteAsRequest(url):
+def get_website_as_request(url):
     """
     Function to get the website (url).
 
@@ -32,13 +32,13 @@ def getWebSiteAsRequest(url):
     """
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'}
     try:
-        req = requests.get(url, headers=headers, timeout=10.000)
+        req = requests.get(url, headers=headers, timeout=settings.CRAWLER_MODULE_REQUEST_TIMEOUT)
     except requests.exceptions.RequestException as e:
         LOGGER.error(e)
         req = None
     return req
 
-def getMonthNameByNumber(month_number):
+def get_month_name_by_number(month_number):
     """
     Function to convert a month number to a 3 letter month name.
 
@@ -60,22 +60,22 @@ def build_download_link():
     month_name = ""
 
     try:
-        request = getWebSiteAsRequest(base_url + getMonthNameByNumber(month_number) + year + ".html")
+        request = get_website_as_request(base_url + get_month_name_by_number(month_number) + year + ".html")
     except requests.exceptions.RequestException as e:
         LOGGER.exception(e)
 
     # check if
     if request == None:
-        destination_url = base_url + getMonthNameByNumber(month_number - 1) + year + ".html"
+        destination_url = base_url + get_month_name_by_number(month_number - 1) + year + ".html"
     else:
         if request.status_code == 404:
-            destination_url = base_url + getMonthNameByNumber(month_number - 1) + year + ".html"
+            destination_url = base_url + get_month_name_by_number(month_number - 1) + year + ".html"
         else:
             # return link with month and year
-            destination_url = base_url + getMonthNameByNumber(month_number) + year + ".html"
+            destination_url = base_url + get_month_name_by_number(month_number) + year + ".html"
     return destination_url
 
-def getWebSite(download_url):
+def get_website(download_url):
     """
     creating request with custom user agent string
 
@@ -112,7 +112,7 @@ def run():
     global downloads
     global app_version
 
-    website = getWebSite(build_download_link())
+    website = get_website(build_download_link())
 
     app_version = extract_version(website)
 
@@ -130,7 +130,4 @@ def run():
     return toJSON(downloads)
 
 if __name__ == "__main__":
-    import sys
-
     print(run())
-    # run(sys.argv[1])

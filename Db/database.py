@@ -7,11 +7,11 @@ import settings # import global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 # logging.basicConfig(level=logging.DEBUG)
 
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOGGER.debug(" current working dir: " + cwd_dir)
+LOGGER.debug(" current working dir: %s", cwd_dir)
 
 sqlite_db_file = os.path.join(cwd_dir, 'aid.db')
 sqlite_table_name = "software"
@@ -20,7 +20,9 @@ sqlite_table_name = "software"
 ################################### FUNCTIONS
 
 def init_db():
-    """Inititalize the database schema"""
+    """
+    Inititalize the database schema.
+    """
     connection = sqlite3.connect(sqlite_db_file)
     cursor = connection.cursor()
 
@@ -59,7 +61,7 @@ def append_software(list_software_dict):
         full_name = software['full_name']
         last_found = software['last_found']
         last_download = software['last_download']
-        LOGGER.debug(f"Actual software: {app_name} {app_version} {full_name} {last_found} {last_download}")
+        LOGGER.debug("Actual software: %s %s %s %s %s", app_name, app_version, full_name, last_found, last_download)
 
         for download in software['downloads']:
             cursor.execute(
@@ -68,15 +70,15 @@ def append_software(list_software_dict):
             entry = cursor.fetchall()
 
             if entry and entry[0][0] == app_version:
-                LOGGER.info(f"App {app_name} in version {app_version} already exists, updating last_found.")
+                LOGGER.info("App %s in version %s already exists, updating last_found.", app_name, app_version)
                 update_query = f"UPDATE {sqlite_table_name} SET last_found = \"{last_found}\" WHERE app_name = \"{app_name}\" AND app_version = \"{app_version}\""
                 cursor = connection.cursor()
-                LOGGER.info("Executing SQL: " + update_query)
+                LOGGER.info("Executing SQL: %s", update_query)
                 cursor.execute(update_query)
             else:
-                LOGGER.info(f"Inserting App {app_name} in version {app_version}.")
+                LOGGER.info("Inserting App %s  in version %s.", app_name, app_version)
                 insert_query = f"INSERT INTO {sqlite_table_name} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
-                LOGGER.debug("SQL execute: " + insert_query)
+                LOGGER.debug("SQL execute: %s", insert_query)
                 cursor.execute(insert_query)
             connection.commit()
     connection.close()
@@ -86,10 +88,10 @@ def activate_download_for_latest_found():
     """Activate the download flag in database for the software that what was latest found"""
     LOGGER.info("Entering function activate_download_for_latest_found")
     connection = sqlite3.connect(sqlite_db_file)
-    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    LOGGER.info("Using sqlite file %s", sqlite_db_file)
     update_query = f"UPDATE {sqlite_table_name} SET download = 1 WHERE last_found = (SELECT MAX(last_found) FROM {sqlite_table_name})"
     cursor = connection.cursor()
-    LOGGER.info("Executing SQL: " + update_query)
+    LOGGER.info("Executing SQL: %s", update_query)
     cursor.execute(update_query)
     connection.commit()
     LOGGER.info("Exiting function activate_download_for_latest_found")
@@ -102,30 +104,30 @@ def activate_download_for_latest_found_by_architecture(architecture):
     @param architecture: specify the architecture for which the software download should be activated. Valid archs are: mac, mac_arm, win32, win64, linux, linux-x86_64, android
     """
     valid_architectures = ['mac', 'mac_arm', 'win32', 'win64', 'linux', 'linux-x86_64', 'android']
-    LOGGER.debug("Valid architectures: " + str(valid_architectures))
+    LOGGER.debug("Valid architectures: %s", str(valid_architectures))
     LOGGER.info("Entering function activate_download_for_latest_found")
     connection = sqlite3.connect(sqlite_db_file)
-    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    LOGGER.info("Using sqlite file %s", sqlite_db_file)
     if (architecture in valid_architectures):
-        LOGGER.debug("Given architecture ("+ architecture + ") is valid.")
+        LOGGER.debug("Given architecture (%s) is valid.", architecture)
         update_query = f"UPDATE {sqlite_table_name} SET download = 1 WHERE app_platform = {architecture} AND last_found = (SELECT MAX(last_found) FROM {sqlite_table_name})"
         cursor = connection.cursor()
-        LOGGER.info("Executing SQL: " + update_query)
+        LOGGER.info("Executing SQL: %s", update_query)
         cursor.execute(update_query)
         connection.commit()
         LOGGER.info("Exiting function activate_download_for_latest_found")
         connection.close()
     else:
-        LOGGER.error("Given architecture (" + architecture + ") is NOT valid.")
+        LOGGER.error("Given architecture (%s) is NOT valid.", architecture)
 
 def reset_download_flag_for_all():
     """Reset the download flag in database for all software."""
     LOGGER.info("Entering function reset_download_flag_for_all")
     connection = sqlite3.connect(sqlite_db_file)
-    LOGGER.info("Using sqlite file " + sqlite_db_file)
+    LOGGER.info("Using sqlite file %s", sqlite_db_file)
     update_query = f"UPDATE {sqlite_table_name} SET download = 0"
     cursor = connection.cursor()
-    LOGGER.info("Executing SQL: " + update_query)
+    LOGGER.info("Executing SQL: %s", update_query)
     cursor.execute(update_query)
     connection.commit()
     LOGGER.info("Exiting function reset_download_flag_for_all")

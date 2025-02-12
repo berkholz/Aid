@@ -1,5 +1,5 @@
 import hashlib
-from lib2to3.fixes.fix_renames import LOOKUP
+# from lib2to3.fixes.fix_renames import LOOKUP
 
 import gnupg
 import requests
@@ -14,7 +14,7 @@ import validators
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 
 ################################### FUNCTIONS

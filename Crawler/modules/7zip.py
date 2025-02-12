@@ -8,7 +8,7 @@ import settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 download_url = 'https://www.7-zip.org/download.html'
 app_name = "7zip".lower()
@@ -31,7 +31,7 @@ def isBinaryURL(ref, platform_string):
 
 def getWebSite():
     # creating request with custom user agent string
-    response = requests.get(download_url).text
+    response = requests.get(download_url, timeout=settings.CRAWLER_MODULE_REQUEST_TIMEOUT).text
     return BeautifulSoup(response, 'html.parser')
 
 
@@ -49,21 +49,25 @@ def toJSON(d):
 
 
 def run():
+    global app_version
     downloads = list()
     website = getWebSite()
+    LOGGER.debug("Getting website %s", website)
     tables = website.table
+    LOGGER.debug("Extracting tables of websites: %s", tables)
     newest_table = tables.find_all('table')[3]
-    global app_version
-    # print(newest_table)
+
     for a in newest_table.find_all('a', href=True):
-        tmp_platform = ''
+        # tmp_platform = ''
         tmp_url_bin = ''
-        tmp_url_asc = ''
-        tmp_url_sha256 = ''
+        # tmp_url_asc = ''
+        # tmp_url_sha256 = ''
 
         if isBinaryURL(a, 'x64.exe'):
             tmp_url_bin = base_url + findPlatformInURL('x64.exe', a['href'])
+            LOGGER.debug("Temporary URL of binary: %s", tmp_url_bin)
             app_version = tmp_url_bin.split('/')[-1].split('-')[0][2:]
+            LOGGER.debug("extracting version: %s", app_version)
             downloads.append(
                 {"app_platform": "win64", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
                  "hash_res": None, "url_pub_key": None})
@@ -71,15 +75,13 @@ def run():
         elif isBinaryURL(a, 'linux-x64.tar.xz'):
             # we have to find tar.gz, because it is a generic linux tar.gz package
             tmp_url_bin = base_url + findPlatformInURL('linux-x64.tar.xz', a['href'])
+            LOGGER.debug("Temporary URL of binary: %s", tmp_url_bin)
             downloads.append(
                 {"app_platform": "linux", "url_bin": tmp_url_bin, "sig_type": None, "sig_res": None, "hash_type": None,
                  "hash_res": None, "url_pub_key": None})
-            # print(url_base + a['href'])
+    LOGGER.debug("Application for adding: %s", downloads)
     return toJSON(downloads)
 
 
 if __name__ == "__main__":
-    import sys
-
     print(run())
-    # run(sys.argv[1])

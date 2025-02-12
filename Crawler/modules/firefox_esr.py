@@ -8,8 +8,7 @@ import settings # import for global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=settings.LogLevel)
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=settings.LOGLEVEL)
 
 app_name = "firefox_esr"
 full_name = "Firefox ESR"
@@ -38,12 +37,17 @@ def getWebSite(url):
         return BeautifulSoup(f.read().decode('utf-8'), 'html.parser')
 
 def extract_version(url):
+    """
+    Function for extracting the version string of the website.
+
+    @param url: Website from where the version string is extracted.
+    """
     # here we catch the complete download site for extracting the version
     website = getWebSite(url)
 
     # we search for all links with class c-download-button
     version_element = website.find_all('span', 'c-release-version')
-    LOGGER.debug("HTML element with version string: " + str(version_element))
+    LOGGER.debug("HTML element with version string: %s", str(version_element))
     # we extract the version of the download, if you want to get the latest remove "- 1" in brackets
     return version_element[0].get_text()# + 'esr'
 
@@ -93,7 +97,4 @@ def run():
 
 
 if __name__ == "__main__":
-    import sys
-
     print(run())
-    # run(sys.argv[1])
