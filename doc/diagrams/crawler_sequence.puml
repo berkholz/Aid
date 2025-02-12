@@ -1,0 +1,28 @@
+@startuml
+participant "MAIN Component"
+participant Crawler
+
+box  "Modules"
+participant Module_Dir
+participant Module
+end box
+
+participant Internet
+
+Crawler -> Module_Dir : scan files in moudles directory for software download modules
+Module_Dir -> Crawler : return list of all python files not beginning with _
+
+loop iterate over all moudle files and call the run() method
+  Crawler -> Module: execute function run() in module
+  Module -> Internet : GET download website
+  Internet -> Module : download website (HTML)
+  Module -> Module : extract software version from HTML
+  Module -> Module : extract download URL from HTML for software and its architectures
+  Module -> Module : extract download URL from HTML for verification hashes and signatures
+  Module -> Module : generate JSON with all software download URLs with architectures
+  Module -> Crawler : return JSON
+  Crawler -> Crawler : add JSON from module to list of all modules
+end
+
+Crawler -> "MAIN Component" : return a list of all JSON returns of all modules
+@enduml
