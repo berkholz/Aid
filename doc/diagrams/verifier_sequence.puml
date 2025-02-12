@@ -1,0 +1,38 @@
+@startuml
+participant Main
+participant Verifier #darkblue
+participant Internet
+participant Filesystem
+
+Main -> Verifier: list of software (url_bin, app_name, app_version, hash_type, hash_res, sig_type, sig_res, url_pub_key)
+
+Verifier -> Verifier : Check if hash_type is None
+
+alt hash_type != None
+   Verifier -> Internet : GET **hash sum file**
+   Internet -> Verifier : PUT hash sum file
+   Verifier -> Filesystem : Save hash sum file to local filesystem
+
+   Verifier -> Internet : GET **signture file** for hash sum file
+   Internet -> Verifier : PUT signature file for hash file sum
+   Verifier -> Filesystem : Save signature file to local filesystem
+
+
+
+   Verifier -> Verifier : Check hash_type
+   Verifier -> Filesystem : Check signature of hash sum file
+   Filesystem -> Verifier : Result of signature check
+   Verifier -> Verifier : if Result is OK continue else quarentine download file
+   Verifier -> Filesystem : Check hash sum of download file
+
+
+else hash_type == None
+   Verifier -> Filesystem : generate hash sum of download file
+   Filesystem -> Verifier : RESULT(hash sum)
+   Verifier -> Db : UPDATE hash_type = manual
+   Verifier -> Db : UPDATE hash_res = RESULT(hash sum)
+end
+
+Downloader -> Filesystem : read downloaded file for hash sum
+Downloader -> Db : UPDATE hash sum value for download file
+@enduml

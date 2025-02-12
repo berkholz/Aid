@@ -1,0 +1,29 @@
+@startuml
+
+participant Db
+participant Downloader #darkblue
+participant Internet
+participant Filesystem
+
+Downloader -> Filesystem : inititalize download directory
+Downloader -> Db : SELECT URLs for all software
+Db -> Downloader : return URLs for software downloads
+
+loop iterate over all URLs
+  Downloader -> Downloader : check if file is allready downloaded
+  Downloader -> Internet : GET download software from URL
+  Internet -> Downloader : return software installation package
+  Downloader -> Filesystem : save download
+  Downloader -> Db : SELECT url for hash sum
+  Db -> Downloader : return url for hash sum of software component
+  Downloader -> Filesystem : verify download with hash sum from database
+  Downloader -> Db : SELECT url for signature
+  Db -> Downloader : return url for signature
+  Downloader -> Filesystem : verify download with signature from database
+  Downloader -> Db : UPDATE database for last downloaded date if all verification successes
+end
+
+Downloader -> Filesystem : read downloaded file for hash sum
+
+Downloader -> Db : UPDATE hash sum value for download file
+@enduml

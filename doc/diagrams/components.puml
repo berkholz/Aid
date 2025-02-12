@@ -1,0 +1,49 @@
+@startuml
+:Crawler;
+note right
+  Crawler trigers all modules except
+  files starting with "_".
+  Modules return a standard JSON dictionary
+  with all informations about the application.
+  The Crawler returns a list of application
+  dictionaries to the MAIN program part, which
+  stores the information in the SQLite database.
+end note
+:Downloader;
+note left
+  The Downloader reads the informations about
+  all applications including download URLs.
+  Then it downloads the applications to the
+  defined download folder.
+end note
+:Verifier;
+note right
+  The Verifier takes the informations about
+  the hash and signing of the application.
+  These were used to verifiy the integrity
+  and authenticity of the download.
+end note
+:PrePackage;
+note left
+  In the pre package state you can make some
+  customizations to the downloaded applications,
+  e.g. deactivating the maintenance service
+  of mozilla firefox.
+end note
+:Packager;
+note right
+  The Packager takes all donwloaded applications,
+  creates an compressed file including all
+  applications, creates a hash sum file of the
+  SQLite database and the compressed file and
+  signes these files with the private key of
+  the Aid application.
+end note
+:Unpackager;
+note left
+  The Unpackager takes the signed compressed
+  zip file and SQLite database, verifies
+  these with the public key of the Aid application
+  and uncompresses the zip file.
+end note
+@enduml
