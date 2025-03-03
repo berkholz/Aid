@@ -5,7 +5,7 @@ participant Filesystem
 
 Packager -> Filesystem : check if signing keys exist
 Filesystem -> Packager : return result of exist check
-Packager -> Packager : generate siging keys if no keys exist
+Packager -> Packager : generate signing keys if no keys exist
 Packager -> Filesystem : save keys with least privileges
 Packager -> Filesystem : create package directory
 Packager -> Filesystem : check modules in module directory

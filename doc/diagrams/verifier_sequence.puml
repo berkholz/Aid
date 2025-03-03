@@ -13,7 +13,7 @@ alt hash_type != None
    Internet -> Verifier : PUT hash sum file
    Verifier -> Filesystem : Save hash sum file to local filesystem
 
-   Verifier -> Internet : GET **signture file** for hash sum file
+   Verifier -> Internet : GET **signature file** for hash sum file
    Internet -> Verifier : PUT signature file for hash file sum
    Verifier -> Filesystem : Save signature file to local filesystem
 
@@ -22,7 +22,7 @@ alt hash_type != None
    Verifier -> Verifier : Check hash_type
    Verifier -> Filesystem : Check signature of hash sum file
    Filesystem -> Verifier : Result of signature check
-   Verifier -> Verifier : if Result is OK continue else quarentine download file
+   Verifier -> Verifier : if Result is OK continue else quarantine download file
    Verifier -> Filesystem : Check hash sum of download file
 
 

@@ -9,10 +9,10 @@ end box
 
 participant Internet
 
-Crawler -> Module_Dir : scan files in moudles directory for software download modules
+Crawler -> Module_Dir : scan files in modules directory for software download modules
 Module_Dir -> Crawler : return list of all python files not beginning with _
 
-loop iterate over all moudle files and call the run() method
+loop iterate over all module files and call the run() method
   Crawler -> Module: execute function run() in module
   Module -> Internet : GET download website
   Internet -> Module : download website (HTML)

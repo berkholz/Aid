@@ -5,12 +5,12 @@ participant Downloader #darkblue
 participant Internet
 participant Filesystem
 
-Downloader -> Filesystem : inititalize download directory
+Downloader -> Filesystem : initialize download directory
 Downloader -> Db : SELECT URLs for all software
 Db -> Downloader : return URLs for software downloads
 
 loop iterate over all URLs
-  Downloader -> Downloader : check if file is allready downloaded
+  Downloader -> Downloader : check if file is already downloaded
   Downloader -> Internet : GET download software from URL
   Internet -> Downloader : return software installation package
   Downloader -> Filesystem : save download

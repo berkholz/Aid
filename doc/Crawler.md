@@ -1,6 +1,6 @@
 The Crawler component is responsible for crawling the download website extracting the software version, the download url and its architecture.
 With these informations a JSON will be generated and added to a complete list of all software products.
-The JSON list is something like an API for other componenten of Aid.
+The JSON list is something like an API for other components of Aid.
 
 The following sequence diagram shows the process of Crawlers components:
 
