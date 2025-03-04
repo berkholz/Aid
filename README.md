@@ -7,6 +7,7 @@ If you want to write a module to extend the software products portfolio, see [mo
 
 To get more informations about the different components of Aid, take a look at [components](doc/Components.md).
 
+[//]: # (TODO update Dependencies and other sections)
 
 ## Run Aid
 ### Windows
