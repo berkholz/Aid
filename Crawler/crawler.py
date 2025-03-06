@@ -18,6 +18,8 @@ MODULE_PATH = "modules"
 
 ################################### FUNCTIONS
 def get_applications():
+    # TODO add function to only crawl specific modules
+    # TODO add try/except
     """
     Get all application by crawling all modules.
     """
