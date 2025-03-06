@@ -1,10 +1,8 @@
 #!/bin/bash
 
+# Make the script globally executable
 chmod +x aid.py
-
-cp aid.py /usr/local/bin
-
-ln -s /usr/local/bin/aid.py /usr/bin/aid
+ln -s  "$(pwd)/aid.py" /usr/bin/aid
 
 # Function that takes a package name and installs it
 install_package() {
