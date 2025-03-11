@@ -72,6 +72,11 @@ if __name__ == '__main__':
             else:
                 selected_modules.append(module)
 
+    # if no modules are specified or the modules don't exist -> exit
+    if not selected_modules:
+        print ("No modules specified, exiting.")
+        exit(1)
+
     for arg in arguments:
         if arguments[arg] == True:
             if arg in ['-a', '--all']:

@@ -42,7 +42,10 @@ def get_applications():
                 # we call the crawler.py from elsewhere, so we import with the __package__
                 mod = importlib.import_module(__package__ + "." + MODULE_PATH + "." + mymodule)
             # run modules function run()
-            json_list.append(mod.run())
+            try:
+                json_list.append(mod.run())
+            except Exception as e:
+                LOGGER.error("Error in module %s: %s", mymodule, e)
         else:
             LOGGER.info("Skipping crawler module %s, because of whitelist.", mymodule)
     return json_list
