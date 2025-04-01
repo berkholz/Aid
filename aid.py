@@ -2,6 +2,8 @@
 from docopt import docopt
 import os
 import Crawler.crawler
+import Downloader.downloader
+import main
 
 __doc__ = \
     """
@@ -45,6 +47,7 @@ def list_modules():
         print (f"Directory {modules_dir} not found.")
         return []
 
+# Run a single component
 def run_component (component, modules): # Run a Single Component
     print (f"Running {component} with modules: {modules}")
     if component == 'crawler':
@@ -97,6 +100,8 @@ if __name__ == '__main__':
                 run_component('Packaging', selected_modules)
             elif arg in ['-u', '--unpackager']:
                 run_component('Unpackaging', selected_modules)
+            elif arg in ['-h', '--help']:
+                print(__doc__)
 
     # TODO implement progress bar
     # TODO implement logging

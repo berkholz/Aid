@@ -58,7 +58,6 @@ def append_software(list_software_dict):
     for software in list_software_dict:
         app_name = software['app_name']
         app_version = software['app_version']
-        app_platform = software['app_platform']
         full_name = software['full_name']
         last_found = software['last_found']
         last_download = software['last_download']
@@ -71,13 +70,13 @@ def append_software(list_software_dict):
             entry = cursor.fetchall()
 
             if entry and entry[0][0] == app_version:
-                LOGGER.info("App %s in version %s for %s already exists, updating last_found.", app_name, app_version, app_platform)
+                LOGGER.info("App %s in version %s already exists, updating last_found.", app_name, app_version)
                 update_query = f"UPDATE {sqlite_table_name} SET last_found = \"{last_found}\" WHERE app_name = \"{app_name}\" AND app_version = \"{app_version}\""
                 cursor = connection.cursor()
                 LOGGER.info("Executing SQL: %s", update_query)
                 cursor.execute(update_query)
             else:
-                LOGGER.info("Inserting App %s  in version %s for %s.", app_name, app_version, app_platform)
+                LOGGER.info("Inserting App %s  in version %s.", app_name, app_version)
                 insert_query = f"INSERT INTO {sqlite_table_name} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
                 LOGGER.debug("SQL execute: %s", insert_query)
                 cursor.execute(insert_query)
