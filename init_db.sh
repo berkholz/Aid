@@ -78,14 +78,9 @@ sudo -u postgres psql -d aid_db -c "INSERT INTO config (app_name, activated) VAL
 sudo -u postgres psql -d aid_db -c "INSERT INTO config (app_name, activated) VALUES ('sysinternal_utilities', TRUE);" > /dev/null
 sudo -u postgres psql -d aid_db -c "INSERT INTO config (app_name, activated) VALUES ('winscp', TRUE);" > /dev/null
 
-sudo -u postgres psql -c "GRANT CREATE, USAGE ON SCHEMA public TO spring_client;" > /dev/null
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO spring_client;" > /dev/null
-sudo -u postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO spring_client;" > /dev/null
+sudo -u postgres psql -d aid_db -c "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE config TO spring_client;" > /dev/null
+sudo -u postgres psql -d aid_db -c "GRANT SELECT ON TABLE config TO python_client;" > /dev/null
 
-# configure the hba.conf
-sudo sed -i "s/peer/trust/g" /var/lib/pgsql/data/pg_hba.conf
-sudo sed -i "s/ident/trust/g" /var/lib/pgsql/data/pg_hba.conf
-sudo sed -i "s/md5/trust/g" /var/lib/pgsql/data/pg_hba.conf
 
 
 #TODO create the Tables and manage read and write access
