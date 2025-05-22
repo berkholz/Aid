@@ -15,4 +15,9 @@ public class DashboardController {
     public String showDashboard() {
         return "dashboard";
     }
+
+    @GetMapping("/documentation")
+    public String showDocumentation() {
+        return "documentation";
+    }
 }

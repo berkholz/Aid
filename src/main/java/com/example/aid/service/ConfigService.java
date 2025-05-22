@@ -17,8 +17,16 @@ public class ConfigService {
         return configRepository.findByAppName(appName);
     }
 
-    public List<Config> getAllActivatedConfigs() {
+    public List<Config> getConfigs() {
+        return (List<Config>) configRepository.findAll();
+    }
+
+    public List<Config> getActivatedConfigs() {
         return configRepository.findByActivated(true);
+    }
+
+    public List<Config> getDeactivatedConfigs() {
+        return configRepository.findByActivated(false);
     }
 
     public void updateConfig(Config config) {
