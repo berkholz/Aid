@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -46,8 +47,9 @@ public class ConfigController {
     }
 
     @PostMapping("/config/update")
-        public String updateConfig(@ModelAttribute Config config) {
+        public String updateConfig(@ModelAttribute Config config, RedirectAttributes redirectAttributes) {
         configService.saveConfig(config);
+        redirectAttributes.addFlashAttribute("msg", "Konfiguration erfolgreich aktualisiert");
         return "redirect:/config";
     }
 }

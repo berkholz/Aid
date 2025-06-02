@@ -28,3 +28,9 @@
             </div>
         </div>
     </nav>
+    <div id="error-box" class="m-2 bg-danger-subtle">
+        <p th:if="${error}" th:text="${error}" style="color: red"></p>
+    </div>
+    <div id="message-box" class="m-2 bg-success-subtle">
+        <p th:if="${msg}" th:text="${msg}" style="color: green"></p>
+    </div>

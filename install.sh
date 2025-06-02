@@ -33,3 +33,6 @@ if command -v dpkg &>/dev/null; then
 install_package python3
 install_package python3-docopt
 install_package python3-requests
+
+# Populate the database
+sudo -u postgres psql -d postgres -f init_data.sql
