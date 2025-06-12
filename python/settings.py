@@ -6,7 +6,14 @@ import os
 LOGLEVEL = logging.INFO
 
 cwd_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/')
+DOWNLOAD_PATH = os.path.join(cwd_dir, 'downloads/') # Configured via WebUI
+DB_CONNECTION = {
+    'dbname': 'postgres',
+    'user': 'postgres',
+    'password': 'postgres',
+    'host': 'localhost',
+    'port': 5432
+}
 
 crawler_module_whitelist = list()
 # to define a whitelits for modules uncomment the line above and add your modules as list
