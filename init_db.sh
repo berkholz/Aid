@@ -59,7 +59,7 @@ cd "$PG_USER_DIR" || exit
 #sudo -u postgres psql -c "GRANT USAGE ON SCHEMA public TO spring_client;" > /dev/null
 #sudo -u postgres psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO spring_client;" > /dev/null
 
-# Creating the Config Table
+# Creating the Module Table
 echo "Creating the config table..."
 sudo -u postgres psql -d postgres -c "CREATE TABLE IF NOT EXISTS config (id SERIAL PRIMARY KEY, app_name VARCHAR(255), activated BOOLEAN);" > /dev/null
 sudo -u postgres psql -d postgres -c "INSERT INTO config (app_name, activated) VALUES ('7zip', TRUE);" > /dev/null

@@ -16,7 +16,7 @@ DB_CONNECTION = {
 }
 
 crawler_module_whitelist = list()
-# to define a whitelits for modules uncomment the line above and add your modules as list
+# to define a whitelits for module uncomment the line above and add your module as list
 # crawler_module_whitelist = ['adobe_enterprise']
 
 CRAWLER_MODULE_REQUEST_TIMEOUT = 30

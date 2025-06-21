@@ -19,37 +19,37 @@ Usage:
         
  
 Options:
-    when no module is specified, all modules will be run
+    when no module is specified, all module will be run
     
     components:
-    -a --all            Run all components with specified modules
+    -a --all            Run all components with specified module
     -c --crawler        Run the Crawler component
     -d --downloader     Run the Downloader component
     -v --verifier       Run the Verifier component
     -p --packager       Run the Packaging components (Pre- and Packaging)
     -u --unpackager     Run the Unpackaging component
-    <module>            Specify modules to run with the component
+    <module>            Specify module to run with the component
     
     helpers:
     -h --help                   Show this screen
-    -l --list                   List all available modules
+    -l --list                   List all available module
 """
 
 # Helper functions
 def list_modules():
-    # Returns the list of modules, when -l is given
-    modules_dir = 'Crawler/modules'
+    # Returns the list of module, when -l is given
+    modules_dir = 'Crawler/module'
     try:
-        modules = [f for f in os.listdir(modules_dir) if f.endswith('.py') and not f.startswith('_')] # get all python files in Crawler/modules, excluding _templates
-        modules = [f[:-3] for f in modules] # Remove the .py extension
-        return modules
+        module = [f for f in os.listdir(modules_dir) if f.endswith('.py') and not f.startswith('_')] # get all python files in Crawler/module, excluding _templates
+        module = [f[:-3] for f in module] # Remove the .py extension
+        return module
     except FileNotFoundError:
         print (f"Directory {modules_dir} not found.")
         return []
 
 # Run a single component
-def run_component (component, modules): # Run a Single Component
-    print (f"Running {component} with modules: {modules}")
+def run_component (component, module): # Run a Single Component
+    print (f"Running {component} with module: {module}")
     if component == 'crawler':
         Crawler.crawler.get_applications()
     # TODO implement the run_component function
@@ -57,27 +57,27 @@ def run_component (component, modules): # Run a Single Component
 # Main function
 if __name__ == '__main__':
     arguments = docopt(__doc__)
-    available_modules = list_modules() # get a list of all available modules
+    available_modules = list_modules() # get a list of all available module
 
     if arguments['--list']:
-        print("Available modules:")
+        print("Available module:")
         for module in available_modules:
             print(f" - {module}")
         exit(0)
 
     if not arguments['<module>']:
-        selected_modules = available_modules # if no module is specified, run all modules
+        selected_modules = available_modules # if no module is specified, run all module
     else:
-        selected_modules = []   # if modules are specified, check if they are available
+        selected_modules = []   # if module are specified, check if they are available
         for module in arguments['<module>']:
             if module not in available_modules:
                 print (f"Module {module} not found.")
             else:
                 selected_modules.append(module)
 
-    # if no modules are specified or the modules don't exist -> exit
+    # if no module are specified or the module don't exist -> exit
     if not selected_modules:
-        print ("No modules specified, exiting.")
+        print ("No module specified, exiting.")
         exit(1)
 
     for arg in arguments:

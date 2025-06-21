@@ -14,7 +14,7 @@ logging.basicConfig(level=settings.LOGLEVEL)
 
 
 ################################### MAIN
-# crawl every module stored in modules path and get application information
+# crawl every module stored in module path and get application information
 applications = Crawler.crawler.get_applications()
 
 Db.database.init_db()

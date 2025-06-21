@@ -14,7 +14,7 @@ all_list = list()
 json_list = list()
 
 MODULE_PATH = "modules"
-db_table_name = "config"
+
 
 ################################### FUNCTIONS
 def get_activated_modules():
@@ -39,6 +39,8 @@ def get_activated_modules():
     return activated_modules
 
 def get_applications():
+    # TODO add function to only crawl specific modules
+    # TODO add try/except
     """
     Get all application by crawling all modules.
     """
@@ -51,7 +53,7 @@ def get_applications():
 
     __all__ = all_list
 
-    # Iterate over all modules
+    # iterate over all modules
     for mymodule in __all__:
         if mymodule in activated_modules:
             LOGGER.info("Checking %s for downloads.", mymodule)
@@ -60,7 +62,7 @@ def get_applications():
                 mod = importlib.import_module(MODULE_PATH + "." + mymodule)
             else:
                 mod = importlib.import_module(__package__ + "." + MODULE_PATH + "." + mymodule)
-            # Run module's function run()
+            # run modules function run()
             try:
                 json_list.append(mod.run())
             except Exception as e:

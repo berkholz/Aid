@@ -4,7 +4,7 @@ import urllib
 from datetime import date
 from urllib.error import URLError, HTTPError
 
-from Crawler.modules.putty import app_version
+from Crawler.module.putty import app_version
 
 download_url = 'https://www.oracle.com/database/sqldeveloper/technologies/download/'
 app_name = "sqldeveloper".lower()

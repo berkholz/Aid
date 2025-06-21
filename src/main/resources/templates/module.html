@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/top :: head}"></head>
+<body>
+    <div th:replace="~{fragments/top :: body}"></div>
+    <div class="container mt-5">
+        <h1 class="text-center">Modules</h1>
+        <div id="error-box" class="m-2 bg-danger-subtle">
+            <p th:if="${error}" th:text="${error}" style="color: red"></p>
+        </div>
+        <div id="message-box" class="m-2 bg-success-subtle">
+            <p th:if="${msg}" th:text="${msg}" style="color: green"></p>
+        </div>
+        <table class="table table-striped table-bordered mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>
+                        <a th:href="@{/module(order=${order == 'asc' ? 'desc' : 'asc'}, filter=${filter})}" class="text-white">
+                            App Name
+                        </a>
+                    </th>
+
+                    <th>
+                        <a th:href="@{/module(order=${order}, filter=${filter == 'activated' ? 'deactivated' : (filter == 'deactivated' ? 'all' : 'activated')})}" class="text-white">
+                            Activated
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+                <tbody>
+                    <tr th:each="module : ${moduleList}">
+                        <td th:text="${module.id}"></td>
+                        <td th:text="${module.appName}"></td>
+                        <td>
+                            <form>
+                                <input th:value="${module.activated}" type="checkbox"/>
+
+                            </form>
+                        </td>
+                    </tr>
+               </tbody>
+        </table>
+    </div>
+    <div th:replace="~{fragments/bottom :: footer}"></div>
+</body>
+</html>

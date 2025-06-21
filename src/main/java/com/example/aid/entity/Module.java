@@ -12,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-public class Config {
+public class Module {
 
     @Id
     private Long id;
